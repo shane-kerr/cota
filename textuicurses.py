@@ -52,7 +52,9 @@ class textui_curses:
     def set_default_color_attr(self, fg=WHITE, bg=BLACK, attr=NORMAL):
         self.default_color_attr = self.color_attr(fg, bg, attr)
     def clear(self):
+        self.scr.bkgdset(' ', self.default_color_attr)
         self.scr.clear()
+        self.scr.bkgdset(' ', 0)
     def write(self, x, y, s, color_attr=None):
         if color_attr is None:
             color_attr = self.default_color_attr
