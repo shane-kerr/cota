@@ -1,0 +1,26 @@
+welcome
+----
+You awaken with a start and a splitting headache. Someone has thrown a
+bucket of water in your face. That man - clearly a slave by his
+bearing and clothing - steps aside and a tanned, muscled man with gray
+hair and more scars than you can count starts to speak.
+
+"Welcome to Iudicatus' Gladiator School, irrumators!"
+
+"Most of you are truly worthless, but it is my job to at least get you
+to hold a shield between some Thracian's khopesh and your neck long
+enough to entertain the culi paying for the show."
+
+"Some of you may think you know which end of a gladius to poke with.
+Some of you may have even survived a fight or two. I don't give a
+merda about that. You'll learn to fight here, and fight well, or by
+Mars I'll have your colei for my breakfast!"
+
+"Okay, lets see what you can do. Pair up and fight."
+
+With that, the slave wheels a cart filled with wooden swords and
+shields out and dumps them on the ground. You stand up, and notice a
+handful of other men. They start towards the weapons...
+----
+
+
