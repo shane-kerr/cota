@@ -150,6 +150,13 @@ class INPUT_RECORD(ctypes.Structure):
         ("Event", Event),
     ]
 
+# http://msdn.microsoft.com/en-us/library/windows/desktop/ms682068%28v=vs.85%29.aspx
+class CONSOLE_CURSOR_INFO(ctypes.Structure):
+    _fields_ = [
+        ("dwSize", DWORD),
+        ("bVisible", BOOL),
+    ]
+
 class textui_win:
     def __init__(self):
         self.kern = ctypes.windll.kernel32
@@ -159,13 +166,19 @@ class textui_win:
         csbi = CONSOLE_SCREEN_BUFFER_INFO()
         self.kern.GetConsoleScreenBufferInfo(self.hOut, ctypes.byref(csbi))
         self.start_attr = csbi.wAttributes
+        cci = CONSOLE_CURSOR_INFO()
+        self.kern.GetConsoleCursorInfo(self.hOut, ctypes.byref(cci))
+        self.start_cursor_info = cci
         dwMode = DWORD(ENABLE_WINDOW_INPUT| ENABLE_MOUSE_INPUT)
         self.kern.SetConsoleMode(self.hIn, 
                                  ENABLE_WINDOW_INPUT| ENABLE_MOUSE_INPUT)
         self.default_color_attr = None
         self.set_default_color_attr(WHITE, BLACK)
-    def restore_start_attr(self):
+    def restore(self):
+        self.default_color_attr = self.start_attr
         self.kern.SetConsoleTextAttribute(self.hOut, self.start_attr)
+        self.kern.SetConsoleCursorInfo(self.hOut, 
+                                       ctypes.byref(self.start_cursor_info))
     def color_attr(self, fg=WHITE, bg=BLACK, attr=NORMAL):
         return fg | attr | bg << 4
     def set_default_color_attr(self, fg=WHITE, bg=BLACK, attr=NORMAL):
@@ -188,6 +201,15 @@ class textui_win:
         pos.X = x
         pos.Y = y
         self.kern.SetConsoleCursorPosition(self.hOut, pos)
+    def cursor_visible(self, visible):
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms683163%28v=vs.85%29.aspx
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686019%28v=vs.85%29.aspx
+        # we need to get the cursor info first, because we must set the
+        # height of the cursor, but we really just want to leave that alone
+        cci = CONSOLE_CURSOR_INFO()
+        self.kern.GetConsoleCursorInfo(self.hOut, ctypes.byref(cci))
+        cci.bVisible = visible
+        self.kern.SetConsoleCursorInfo(self.hOut, ctypes.byref(cci))
     def get_screen_size(self):
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms683171%28v=vs.85%29.aspx
         csbi = CONSOLE_SCREEN_BUFFER_INFO()
@@ -195,16 +217,8 @@ class textui_win:
         columns = csbi.srWindow.Right - csbi.srWindow.Left + 1
         rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1
         return (columns, rows)
-    def _scroll(self, x1, y1, x2, y2, lines):
+    def _scroll(self, srctScrollRect, coordDest):
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685107%28v=vs.85%29.aspx
-        srctScrollRect = SMALL_RECT()
-        srctScrollRect.Left = x1
-        srctScrollRect.Top = y1+lines
-        srctScrollRect.Right = x2
-        srctScrollRect.Bottom = y2
-        coordDest = COORD()
-        coordDest.X = x1
-        coordDest.Y = y1
         fill = CHAR_INFO()
         fill_char = Char()
         fill_char.AsciiChar = b" "
@@ -214,9 +228,25 @@ class textui_win:
                                              ctypes.byref(srctScrollRect), None,
                                              coordDest, ctypes.byref(fill)) 
     def scroll_up(self, x1, y1, x2, y2, lines=1):
-        self._scroll(x1, y1, x2, y2, lines)
+        srctScrollRect = SMALL_RECT()
+        srctScrollRect.Left = x1
+        srctScrollRect.Top = y1+lines
+        srctScrollRect.Right = x2
+        srctScrollRect.Bottom = y2
+        coordDest = COORD()
+        coordDest.X = x1
+        coordDest.Y = y1
+        self._scroll(srctScrollRect, coordDest)
     def scroll_down(self, x1, y1, x2, y2, lines=1):
-        self._scroll(x1, y1, x2, y2, -lines)
+        srctScrollRect = SMALL_RECT()
+        srctScrollRect.Left = x1
+        srctScrollRect.Top = y1
+        srctScrollRect.Right = x2
+        srctScrollRect.Bottom = y2-lines
+        coordDest = COORD()
+        coordDest.X = x1
+        coordDest.Y = y1+lines
+        self._scroll(srctScrollRect, coordDest)
     # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685035%28v=vs.85%29.aspx
     # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685035%28v=vs.85%29.aspx
     def get_input(self, timeout_msec=None):
@@ -259,6 +289,6 @@ def textui_win_invoke(func, *args):
     try:
         func(ui, *args)
     finally:
-        ui.restore_start_attr()
+        ui.restore()
         ui.clear()
 
