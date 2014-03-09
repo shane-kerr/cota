@@ -128,6 +128,7 @@ for n in range(500):    # hopefully we won't ever have more than 500 lines...
 def dialog_scroll(ui, text):
     """show some dialog in a scroll"""
     text_ofs = 0
+    ui.cursor_visible(False)
     but_up = button(ui, " Up ", 
                 ui.color_attr(textui.BLACK, textui.WHITE, textui.NORMAL))
     but_down = button(ui, "Down", 
@@ -188,17 +189,20 @@ def dialog_scroll(ui, text):
             refresh = False
 
         # display our buttons
+        visible_range = height - 6
+        max_text_ofs = len(lines) - visible_range
         if text_ofs > 0:
             but_up.show(width-27, height-3)
         else:
             ui.write(width-27, height-3, "        ")
-        if (n+text_ofs) < len(lines):
+        if text_ofs < max_text_ofs:
             text_done = False
             but_down.label = "Down"
         else:
             text_done = True
             but_down.label = "DONE"
         but_down.show(width-17, height-3)
+        # read input
         ui.cursor_position(width-1, height-1)
         input_event = ui.get_input()
         if input_event.event_type == "keyboard":
@@ -210,17 +214,34 @@ def dialog_scroll(ui, text):
                     text_ofs = text_ofs + 1
                     ui.scroll_up(4, 2, width-9, height-5)
                     ui.write(4, height-5, lines[text_ofs+height-7])
-            if input_event.key == textui.KEY_DOWN:
+            if input_event.key == textui.KEY_PGDN:
+                new_text_ofs = min(text_ofs + (visible_range-2), max_text_ofs)
+                text_ofs_diff = new_text_ofs - text_ofs
+                for n in range(text_ofs_diff):
+                    text_ofs = text_ofs + 1
+                    ui.scroll_up(4, 2, width-9, height-5)
+                    ui.write(4, height-5, lines[text_ofs+height-7])
+            elif input_event.key == textui.KEY_DOWN:
                 if not text_done:
                     text_ofs = text_ofs + 1
                     ui.scroll_up(4, 2, width-9, height-5)
                     ui.write(4, height-5, lines[text_ofs+height-7])
+            elif input_event.key == textui.KEY_PGUP:
+                new_text_ofs = max(text_ofs - (visible_range-2), 0)
+                text_ofs_diff = text_ofs - new_text_ofs
+                for n in range(text_ofs_diff):
+                    text_ofs = text_ofs - 1
+                    ui.scroll_down(4, 2, width-9, height-5)
+                    ui.write(4, 2, lines[text_ofs])
+                if text_ofs == 0:
+                    but_up.selected = False
+                    but_down.selected = True
             elif (input_event.key == textui.KEY_UP) or \
                  (input_event.key in (textui.KEY_ENTER, ord(' ')) and \
                  but_up.selected):
                 if text_ofs > 0:
                     text_ofs = text_ofs - 1
-                    ui.scroll_down(4, 2, width-9, height-6)
+                    ui.scroll_down(4, 2, width-9, height-5)
                     ui.write(4, 2, lines[text_ofs])
                 if text_ofs == 0:
                     but_up.selected = False
