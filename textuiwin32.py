@@ -171,9 +171,7 @@ class textui_win:
         self.default_color_attr = self.color_attr(fg, bg, attr)
     def clear(self):
         (width, height) = self.get_screen_size()
-        self.cursor_position(0, 0)
-        sys.stdout.write(' ' * (width * height))
-        sys.stdout.flush()
+        self.write(0, 0, ' ' * (width * height))
         self.cursor_position(0, 0)
     def write(self, x, y, s, color_attr=None):
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686047%28v=vs.85%29.aspx
