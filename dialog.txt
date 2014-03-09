@@ -2,8 +2,8 @@ welcome
 ----
 You awaken with a start and a splitting headache. Someone has thrown a
 bucket of water in your face. That man - clearly a slave by his
-bearing and clothing - steps aside and a tanned, muscled man with gray
-hair and more scars than you can count starts to speak.
+bearing and clothing - steps aside and a tanned, muscled man with 
+graying hair and more scars than you can count starts to speak.
 
 "Welcome to Iudicatus' Gladiator School, irrumators!"
 
@@ -16,7 +16,7 @@ Some of you may have even survived a fight or two. I don't give a
 merda about that. You'll learn to fight here, and fight well, or by
 Mars I'll have your colei for my breakfast!"
 
-"Okay, lets see what you can do. Pair up and fight."
+"Okay, lets see what you can do. Pair up and duel."
 
 With that, the slave wheels a cart filled with wooden swords and
 shields out and dumps them on the ground. You stand up, and notice a
