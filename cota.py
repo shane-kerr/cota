@@ -3,8 +3,6 @@ import random
 import textwrap
 import textui
 
-import pprint
-
 class dialog:
     def __init__(self, filename="dialog.txt"):
         self.messages = { }
@@ -160,8 +158,6 @@ def dialog_scroll(ui, text):
                 ui.write(width-len(txt)-1, n, txt)
                 n = n + 1
             ui.write(wid_l, 0, ("-" * wid_m))
-#           for n in range(len(scroll_top_right)-1):
-#               ui.write(wid_l, n+1, (" " * wid_m))
             # display the sides
             side_rough_edges = "/>{}|\\"
             ofs = len(scroll_top_left)
@@ -206,8 +202,8 @@ def dialog_scroll(ui, text):
         ui.cursor_position(width-1, height-1)
         input_event = ui.get_input()
         if input_event.event_type == "keyboard":
-            if but_down.selected and input_event.key in (ord('\n'), 
-                                                         ord('\r'), ord(' ')):
+            if but_down.selected and input_event.key in (textui.KEY_ENTER,
+                                                         ord(' ')):
                 if text_done:
                     break
                 else:
@@ -220,7 +216,7 @@ def dialog_scroll(ui, text):
                     ui.scroll_up(4, 2, width-9, height-5)
                     ui.write(4, height-5, lines[text_ofs+height-7])
             elif (input_event.key == textui.KEY_UP) or \
-                 (input_event.key in (ord('\n'), ord('\r'), ord(' ')) and \
+                 (input_event.key in (textui.KEY_ENTER, ord(' ')) and \
                  but_up.selected):
                 if text_ofs > 0:
                     text_ofs = text_ofs - 1

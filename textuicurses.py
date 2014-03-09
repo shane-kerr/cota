@@ -26,6 +26,7 @@ KEY_PGUP = curses.KEY_PPAGE
 KEY_END = curses.KEY_END
 KEY_PGDN = curses.KEY_NPAGE
 KEY_F1 = curses.KEY_F1
+KEY_ENTER = ord('\n')
 
 class textui_curses:
     def __init__(self, scr):
@@ -61,6 +62,11 @@ class textui_curses:
         self.scr.addstr(y, x, s, color_attr)
     def cursor_position(self, x, y):
         self.scr.move(y, x)
+    def cursor_visible(self, visible):
+        if visible:
+            curses.curs_set(1)
+        else:
+            curses.curs_set(0)
     def get_screen_size(self):
         return (curses.tigetnum("cols"), curses.tigetnum("lines"))
     def scroll_up(self, x1, y1, x2, y2, lines=1):
@@ -68,6 +74,7 @@ class textui_curses:
         rows = y2 - y1 + 1
         win = self.scr.subwin(rows, cols, y1, x1)
         win.scrollok(True)
+        win.bkgd(' ', self.default_color_attr)
         win.scroll(lines)
     def scroll_down(self, x1, y1, x2, y2, lines=1):
         (save_y, save_x) = self.scr.getyx()
@@ -75,6 +82,7 @@ class textui_curses:
         rows = y2 - y1 + 1
         win = self.scr.subwin(rows, cols, y1, x1)
         win.scrollok(True)
+        win.bkgd(' ', self.default_color_attr)
         win.move(0,0)
         win.insdelln(lines)
         self.scr.move(save_y, save_x)

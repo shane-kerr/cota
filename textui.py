@@ -9,6 +9,7 @@ The functionality provided is:
   * Also receive notification when the console is resized
 * Drawing a string a position with a specified color
 * Moving the cursor to a given position
+* Hide or display the cursor
 * Scrolling a region of the screen
 * Read a character from the keyboard
 * Detect mouse clicks
