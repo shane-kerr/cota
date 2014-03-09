@@ -135,58 +135,67 @@ def dialog_scroll(ui, text):
     but_down = button(ui, "Down", 
                 ui.color_attr(textui.BLACK, textui.WHITE, textui.NORMAL))
     but_down.selected = True
+    # convert our text to wrapped text
+    (width, height) = ui.get_screen_size()
+    lines = textwrap.wrap(text[0], width-13)
+    for paragraph in text[1:]:
+       lines.append("")
+       lines.extend(textwrap.wrap(paragraph, width-13))
+    refresh = True
     while True:
-        (width, height) = ui.get_screen_size()
-        ui.set_default_color_attr(textui.YELLOW, textui.YELLOW, textui.BOLD)
-        ui.clear()
-        # convert our text to wrapped text
-        lines = textwrap.wrap(text[0], width-13)
-        for paragraph in text[1:]:
-            lines.append("")
-            lines.extend(textwrap.wrap(paragraph, width-13))
-        # show the top
-        wid_l = len(scroll_top_left[0])
-        wid_r = len(scroll_top_right[0])
-        wid_m = width - (wid_l + wid_r) - 1
-        n = 0
-        for txt in scroll_top_left:
-            ui.write(1, n, txt)
-            n = n + 1
-        n = 0
-        for txt in scroll_top_right:
-            ui.write(width-len(txt)-1, n, txt)
-            n = n + 1
-        ui.write(wid_l, 0, ("-" * wid_m))
-        for n in range(len(scroll_top_right)-1):
-            ui.write(wid_l, n+1, (" " * wid_m))
-        # display the sides
-        side_rough_edges = "/>{}|\\"
-        ofs = len(scroll_top_left)
-        for n in range(height-ofs-len(scroll_bottom_left)):
-            ui.write(1, ofs+n, scroll_left_edges[n])
-            ui.write(width-7, ofs+n, scroll_right_edges[n])
-        # display the bottom
-        wid_l = len(scroll_bottom_left[0])
-        wid_r = len(scroll_bottom_right[0])
-        wid_m = width - (wid_l + wid_r) - 1
-        n = 0
-        for txt in scroll_bottom_left:
-            ui.write(1, height-len(scroll_bottom_left)+n, txt)
-            n = n + 1
-        n = 0
-        for txt in scroll_bottom_right:
-            ui.write(width-len(txt)-1, height-len(scroll_bottom_right)+n, txt)
-            n = n + 1
-        ui.write(wid_l, height-1, "-" * wid_m)
-        # display the text
-        ui.set_default_color_attr(textui.BLACK, textui.YELLOW, textui.NORMAL)
-        n = 0
-        while ((n+text_ofs) < len(lines)) and ((n+2) < (height-4)):
-            ui.write(4, n+2, lines[n+text_ofs])
-            n = n + 1
+        if refresh:
+            ui.set_default_color_attr(textui.YELLOW, textui.YELLOW, textui.BOLD)
+            ui.clear()
+            (width, height) = ui.get_screen_size()
+            # show the top
+            wid_l = len(scroll_top_left[0])
+            wid_r = len(scroll_top_right[0])
+            wid_m = width - (wid_l + wid_r) - 1
+            n = 0
+            for txt in scroll_top_left:
+                ui.write(1, n, txt)
+                n = n + 1
+            n = 0
+            for txt in scroll_top_right:
+                ui.write(width-len(txt)-1, n, txt)
+                n = n + 1
+            ui.write(wid_l, 0, ("-" * wid_m))
+#           for n in range(len(scroll_top_right)-1):
+#               ui.write(wid_l, n+1, (" " * wid_m))
+            # display the sides
+            side_rough_edges = "/>{}|\\"
+            ofs = len(scroll_top_left)
+            for n in range(height-ofs-len(scroll_bottom_left)):
+                ui.write(1, ofs+n, scroll_left_edges[n])
+                ui.write(width-7, ofs+n, scroll_right_edges[n])
+            # display the bottom
+            wid_l = len(scroll_bottom_left[0])
+            wid_r = len(scroll_bottom_right[0])
+            wid_m = width - (wid_l + wid_r) - 1
+            n = 0
+            for txt in scroll_bottom_left:
+                ui.write(1, height-len(scroll_bottom_left)+n, txt)
+                n = n + 1
+            n = 0
+            for txt in scroll_bottom_right:
+                ui.write(width-len(txt)-1, 
+                         height-len(scroll_bottom_right)+n, txt)
+                n = n + 1
+            ui.write(wid_l, height-1, "-" * wid_m)
+            # display the text
+            ui.set_default_color_attr(textui.BLACK, textui.YELLOW, 
+                                      textui.NORMAL)
+            n = 0
+            while ((n+text_ofs) < len(lines)) and ((n+2) < (height-4)):
+                ui.write(4, n+2, lines[n+text_ofs])
+                n = n + 1
+            refresh = False
+
         # display our buttons
         if text_ofs > 0:
             but_up.show(width-27, height-3)
+        else:
+            ui.write(width-27, height-3, "        ")
         if (n+text_ofs) < len(lines):
             text_done = False
             but_down.label = "Down"
@@ -197,18 +206,26 @@ def dialog_scroll(ui, text):
         ui.cursor_position(width-1, height-1)
         input_event = ui.get_input()
         if input_event.event_type == "keyboard":
-            if input_event.key in (ord('\n'), ord(' ')) and but_down.selected:
+            if but_down.selected and input_event.key in (ord('\n'), 
+                                                         ord('\r'), ord(' ')):
                 if text_done:
                     break
                 else:
                     text_ofs = text_ofs + 1
+                    ui.scroll_up(4, 2, width-9, height-5)
+                    ui.write(4, height-5, lines[text_ofs+height-7])
             if input_event.key == textui.KEY_DOWN:
                 if not text_done:
                     text_ofs = text_ofs + 1
+                    ui.scroll_up(4, 2, width-9, height-5)
+                    ui.write(4, height-5, lines[text_ofs+height-7])
             elif (input_event.key == textui.KEY_UP) or \
-                 (input_event.key in (ord('\n'), ord(' ')) and but_up.selected):
+                 (input_event.key in (ord('\n'), ord('\r'), ord(' ')) and \
+                 but_up.selected):
                 if text_ofs > 0:
                     text_ofs = text_ofs - 1
+                    ui.scroll_down(4, 2, width-9, height-6)
+                    ui.write(4, 2, lines[text_ofs])
                 if text_ofs == 0:
                     but_up.selected = False
                     but_down.selected = True
@@ -231,12 +248,16 @@ def dialog_scroll(ui, text):
                     break
                 else:
                     text_ofs = text_ofs + 1
+                    ui.scroll_up(4, 2, width-9, height-5)
+                    ui.write(4, height-5, lines[text_ofs+height-7])
                     but_up.selected = False
                     but_down.selected = True
             elif (width - 27 <= input_event.x <= width - 20) and \
                  (input_event.y == height-3):
                 if text_ofs > 0:
                     text_ofs = text_ofs - 1
+                    ui.scroll_down(4, 2, width-9, height-6)
+                    ui.write(4, 2, lines[text_ofs])
                 if text_ofs > 0:
                     but_up.selected = True
                     but_down.selected = False
@@ -244,6 +265,8 @@ def dialog_scroll(ui, text):
                     but_up.selected = False
                     but_down.selected = True
             but_up.show(width-27, height-3)
+        elif input_event.event_type == "resize":
+            refresh = True
 
 class game:
     def __init__(self, debug_log=None):
