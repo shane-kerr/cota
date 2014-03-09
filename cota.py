@@ -55,6 +55,12 @@ class dialog:
                 msg_txt_lines.append(s.strip())
         return (msg_id, msg_txt_paragraphs, line_num)
 
+# sets of keys
+# we support the arrow keys, vi-keys, numpad keys, and WASD
+keys_u = (textui.KEY_UP,    ord('k'), ord('8'), ord('w'))
+keys_d = (textui.KEY_DOWN,  ord('j'), ord('2'), ord('s'))
+keys_l = (textui.KEY_LEFT,  ord('h'), ord('4'), ord('a'))
+keys_r = (textui.KEY_RIGHT, ord('l'), ord('6'), ord('d'))
 
 class button:
     def __init__(self, ui, label, attr):
@@ -221,7 +227,7 @@ def dialog_scroll(ui, text):
                     text_ofs = text_ofs + 1
                     ui.scroll_up(4, 2, width-9, height-5)
                     ui.write(4, height-5, lines[text_ofs+height-7])
-            elif input_event.key == textui.KEY_DOWN:
+            elif input_event.key in keys_d:
                 if not text_done:
                     text_ofs = text_ofs + 1
                     ui.scroll_up(4, 2, width-9, height-5)
@@ -236,7 +242,7 @@ def dialog_scroll(ui, text):
                 if text_ofs == 0:
                     but_up.selected = False
                     but_down.selected = True
-            elif (input_event.key == textui.KEY_UP) or \
+            elif (input_event.key in keys_u) or \
                  (input_event.key in (textui.KEY_ENTER, ord(' ')) and \
                  but_up.selected):
                 if text_ofs > 0:
@@ -250,11 +256,11 @@ def dialog_scroll(ui, text):
                 if text_ofs > 0:
                     but_up.selected = not but_up.selected
                     but_down.selected = not but_down.selected
-            elif input_event.key == textui.KEY_LEFT:
+            elif input_event.key in keys_l:
                 if text_ofs > 0:
                     but_up.selected = True
                     but_down.selected = False
-            elif input_event.key == textui.KEY_RIGHT:
+            elif input_event.key in keys_r:
                 if text_ofs > 0:
                     but_up.selected = False
                     but_down.selected = True
