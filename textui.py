@@ -58,6 +58,27 @@ else:
 
     invoke = textui_curses_invoke
 
+def wait_for_minimum_size(ui, min_width, min_height):
+    while True:
+        (width, height) = ui.get_screen_size()
+        if (width >= min_width) and (height >= min_height):
+            return
+        ui.clear()
+        msg1 = "Screen %dx%d characters." % (width, height)
+        msg2 = "This is too small to play the game."
+        msg3 = "Please resize to at least %dx%d characters." % (min_width,
+                                                                min_height)
+        small_msg = "Screen too small."
+        if (width >= len(msg3)) and (height >= 3):
+            ui.write((width - len(msg1)) // 2, (height // 2) - 1, msg1)
+            ui.write((width - len(msg2)) // 2, (height // 2), msg2)
+            ui.write((width - len(msg3)) // 2, (height // 2) + 1, msg3)
+        elif (width >= len(small_msg)) and (height >= 1):
+            ui.write((width - len(small_msg)) // 2, (height // 2), small_msg)
+        else:
+            pass        # no message for really dinky screen
+        input_event = ui.get_input()
+
 # curses testing stuff
 
 #def hello(ui, s=None):
@@ -91,5 +112,9 @@ else:
 #            ui.write(0, 6, "click at %d,%d" % (input_event.x, input_event.y))
 #        elif input_event.event_type == "resize":
 #            ui.write(0, 4, "Screen is %dx%d    " % ui.get_screen_size())
+
+#def bar(ui):
+#    wait_for_minimum_size(ui, 80, 25)
+#
 #if __name__ == "__main__":
-#    invoke(hello, "foo")
+#    invoke(bar)
