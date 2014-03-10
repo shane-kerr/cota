@@ -38,7 +38,7 @@ def background_selection(ui):
             (width, height) = ui.get_screen_size()
             ui.write(1, 0, 
                      "So now you're a gladiator. But what were you before...")
-            step_txt = "[Step 1 of 2]"
+            step_txt = "[Step 1 of 3]"
             ui.write(width - len(step_txt) - 1, height - 1, step_txt)
             refresh = False
         for n in range(len(backgrounds)):

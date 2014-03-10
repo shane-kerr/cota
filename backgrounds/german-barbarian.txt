@@ -22,3 +22,8 @@ While a typical barbarian fighting force was no match for a trained
 Roman legion, individual Germans can be excellent warriors. They are
 favored in the arena for their fierceness - as well as their long
 beards which often comes in exotic colors.
+
+---
+skills Hide,Sneak,*,*,*
+default Language - Germanic EDU*5
+default Tactics 25

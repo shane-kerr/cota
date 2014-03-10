@@ -1,0 +1,47 @@
+# This file lists the skills and their defaults
+
+# movement & perception
+Hide                10
+Sneak               10
+Spot Hidden         25
+
+---
+
+# generic combat 
+Dodge                   DEX*2
+Tactics                 1
+Throw                   10
+
+---
+
+# weapon skills
+# http://www.nikkeffingham.com/runequest/weapons.htm
+Axe                     10
+Dagger                  15
+Pilum                   10
+Net                     5
+Shield - Small          15
+Shield - Medium         15
+Shield - Large          15
+Sword - Long            20
+Sword - Short           15
+Trident                 5
+
+---
+
+# unarmed combat
+Fist                    25
+Head Butt               10
+Kick                    15
+
+---
+
+# knowledge
+Cthulhu Mythos          0
+Empire                  1
+First Aid               30
+Language - Latin        1
+Language - Germanic     0
+Occult                  5
+Science - Christianity  0
+

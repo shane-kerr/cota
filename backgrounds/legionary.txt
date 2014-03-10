@@ -26,3 +26,9 @@ Legionaries could end up in the arena for any number of reasons, such
 as cowardice, desertion, or disobeying a superior. They are generally
 good gladiators, although eventual death in a fight is almost certain,
 just like everyone who fights for the crowds.
+
+---
+skills Empire,Spot Hidden,Tactics,Shield,Sword,Pilum
+default Empire 20
+default Language - Latin EDU*5
+default Tactics 25

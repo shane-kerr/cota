@@ -26,3 +26,6 @@ prevented them from defending themselves against other combatants.
 Indeed many Christians crave martyrdom in the arena, rather than
 fearing death.
 
+---
+skills Science - Christianity,Occult,*,*,*
+default Language - Latin EDU*5
