@@ -28,16 +28,20 @@ def background_selection(ui):
     (backgrounds, longest_name) = load_all_backgrounds()
     ui.set_default_color_attr(textui.BLACK, textui.WHITE)
     ui.cursor_visible(False)
-    ui.clear()
-    (width, height) = ui.get_screen_size()
-    ui.write(1, 0, "So now you're a gladiator. But what were you before...")
-    step_txt = "[Step 1 of 2]"
-    ui.write(width - len(step_txt) - 1, height - 1, step_txt)
     menu_color = ui.color_attr(textui.BLACK, textui.WHITE)
     choice_color = ui.color_attr(textui.WHITE, textui.BLACK)
     disabled_color = ui.color_attr(textui.BLACK, textui.WHITE, textui.BOLD)
     choice = 0
+    refresh = True
     while True:
+        if refresh:
+            ui.clear()
+            (width, height) = ui.get_screen_size()
+            ui.write(1, 0, 
+                     "So now you're a gladiator. But what were you before...")
+            step_txt = "[Step 1 of 2]"
+            ui.write(width - len(step_txt) - 1, height - 1, step_txt)
+            refresh = False
         for n in range(len(backgrounds)):
             txt = backgrounds[n].name.ljust(longest_name)
             if backgrounds[n].image == "x":
@@ -58,9 +62,9 @@ def background_selection(ui):
             lines.extend(textwrap.wrap(paragraph, width-(longest_name+8)))
         for n in range(len(lines)):
             ui.write(longest_name+6, n+2, lines[n])
+        new_choice = choice
         input_event = ui.get_input()
         if input_event.event_type == "keyboard":
-            new_choice = choice
             if input_event.key is textui.KEY_ENTER:
                 return choice
             elif input_event.key in keys_d:
@@ -82,9 +86,14 @@ def background_selection(ui):
         elif (input_event.event_type == "mouse") and (input_event.left_click()):
                 if (2 <= input_event.x <= 4+longest_name):
                     new_choice = input_event.y-2
-                    if 0 < new_choice < len(backgrounds):
-                        if new_choice == choice:
-                            return choice
+                    if new_choice >= len(backgrounds):
+                        new_choice = choice
+                    elif backgrounds[new_choice].image == 'x':
+                        new_choice = choice
+                    elif new_choice == choice:
+                        return choice
+        elif input_event.event_type == "resize":
+            refresh = True
         if new_choice != choice:
             # erase old picture
             image = backgrounds[choice].image
