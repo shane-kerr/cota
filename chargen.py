@@ -35,6 +35,7 @@ def background_selection(ui):
     refresh = True
     while True:
         if refresh:
+            textui.wait_for_minimum_size(ui, 80, 24)
             ui.clear()
             (width, height) = ui.get_screen_size()
             ui.write(1, 0, 

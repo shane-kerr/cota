@@ -64,7 +64,7 @@ def wait_for_minimum_size(ui, min_width, min_height):
         if (width >= min_width) and (height >= min_height):
             return
         ui.clear()
-        msg1 = "Screen %dx%d characters." % (width, height)
+        msg1 = "The screen is %dx%d characters." % (width, height)
         msg2 = "This is too small to play the game."
         msg3 = "Please resize to at least %dx%d characters." % (min_width,
                                                                 min_height)

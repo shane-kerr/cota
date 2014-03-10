@@ -143,6 +143,7 @@ def dialog_scroll(ui, text):
     refresh = True
     while True:
         if refresh:
+            textui.wait_for_minimum_size(ui, 80, 24)
             ui.set_default_color_attr(textui.YELLOW, textui.YELLOW, textui.BOLD)
             ui.clear()
             (width, height) = ui.get_screen_size()
