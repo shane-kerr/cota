@@ -37,7 +37,6 @@ Kick                    15
 ---
 
 # knowledge
-Cthulhu Mythos          0
 Empire                  1
 First Aid               30
 Language - Latin        1

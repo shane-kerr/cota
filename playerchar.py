@@ -20,7 +20,7 @@ class Skills:
             name = ' '.join(parts[:-1])
             self.names.append(name)
             self.defaults[name] = default
-                
+
 # Using p.63 of Cthulhu Invictus for character creation
 # ignore aging (assume all characters between 18 and 28)
 class PlayerCharacter:
@@ -43,11 +43,17 @@ class PlayerCharacter:
         self.MP = self.POW
         self.SP = self.Sanity
 
-        self.skill["Cthulhu Mythos"] = 0
+        self.skill_defaults = { }
+        self.skills_started = { }
+        self.skills_added = { }
+        self.skill_levels = { }
 
-if __name__ == "__main__":
-  import pprint
-  skills = Skills()
-  pprint.pprint(skills.names)
-  pprint.pprint(skills.defaults)
+        # we'll treat this specially...
+        self.cthulhu_mythos = 0
+
+#if __name__ == "__main__":
+#  import pprint
+#  skills = Skills()
+#  pprint.pprint(skills.names)
+#  pprint.pprint(skills.defaults)
 
