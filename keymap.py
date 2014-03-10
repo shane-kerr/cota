@@ -1,3 +1,5 @@
+import textui
+
 # sets of keys
 # we support the arrow keys, vi-keys, numpad keys, and WASD
 keys_u = (textui.KEY_UP,    ord('k'), ord('8'), ord('w'))
