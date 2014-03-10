@@ -1,20 +1,18 @@
 Legionary
 
-         :////::/+os.    
-      -//`        sh     
-    ./.          .N:     
-   ::            hy      
-  /.     `.-/oys/s/      
- -:    .-+hNdyso/o:      
- +    :-hd:       `-/:/- 
- +   :-do    .------`  y 
-`/   ooy  .`-- `..-.`  y 
- :-`-/d- sMo../hmmmmmh++ 
-   .-.s. oMM-  `/s+ydy+` 
-       : +MM+   +` :ds:  
-       -.hMMh`  .- /dy.  
-    `/ohNMMMMMdo::`ohs   
-     .-:::::///`   `:-   
+       `:::::-://y/    
+     -::`       -m.    
+   ./.          ho     
+  -:     ``.--.-h.     
+ -:    .:ohhddyh+`     
+ +   `:+ho-.    `.:.:- 
+`/   /+h.   .`..-..` y 
+.:  /:m``:.:-.-:::-.`y 
+ ...+:s :Mh.`:ymmmNmo+ 
+   ``.: -MM/  `+..yy+  
+      - :MMs   / `hy+  
+    .:ohNMMMdo/::-ds`  
+    `-://++++/`   :/   
 
 The Roman legionary is a professional soldier of the Roman army. The
 main fighting force of a legion is heavy infantry, although legions
@@ -26,4 +24,5 @@ expert combatant, as part of a legion he is nearly unbeatable.
 
 Legionaries could end up in the arena for any number of reasons, such
 as cowardice, desertion, or disobeying a superior. They are generally
-good gladiators, although eventual death in a fight is almost certain.
+good gladiators, although eventual death in a fight is almost certain,
+just like everyone who fights for the crowds.
