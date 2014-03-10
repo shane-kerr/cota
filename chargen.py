@@ -169,7 +169,7 @@ def show_skill_list(ui, width, height, ofs, cur, skill_list, pc):
     
 def do_occupation_skills(ui, bg, pc, skill_list):
     # set defaults based on statistics
-    for (name, default) in skill_list.defaults.iteritems():
+    for (name, default) in skill_list.defaults.items():
         if default.upper().startswith("DEX*"):
             default = pc.DEX * int(default[4:])
         elif default.upper().startswith("EDU*"):
@@ -177,7 +177,7 @@ def do_occupation_skills(ui, bg, pc, skill_list):
         pc.skill_defaults[name] = int(default)
         pc.skill_levels[name] = int(default)
     # set new defaults from background
-    for (name, default) in bg.default_skill_levels.iteritems():
+    for (name, default) in bg.default_skill_levels.items():
         if default.upper().startswith("DEX*"):
             default = pc.DEX * int(default[4:])
         elif default.upper().startswith("EDU*"):
@@ -286,6 +286,10 @@ def do_occupation_skills(ui, bg, pc, skill_list):
                 cur = max(cur-(height-6), 0)
                 if skill_list.names[cur] == '---':
                     cur = cur - 1
+            elif input_event.key == textui.KEY_ENTER:
+                return "next"
+            elif input_event.key == 27:
+                return "prev"
         while (cur - ofs) >= (height - 4):
             ofs = ofs + 1
         while (cur - ofs) < 0:
@@ -293,15 +297,13 @@ def do_occupation_skills(ui, bg, pc, skill_list):
 
 # TODO:
 # mouse
-# home/end?
-# pgup/pgdn?
-# ESC to go back?
 
 def make_char(ui):
     skill_list = Skills()
     pc = PlayerCharacter()
     bg = background_selection(ui)
-    do_occupation_skills(ui, bg, pc, skill_list)
+    while do_occupation_skills(ui, bg, pc, skill_list) == "prev":
+        bg = background_selection(ui)
 
 if __name__ == "__main__":
     textui.invoke(make_char)
