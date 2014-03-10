@@ -79,16 +79,22 @@ def background_selection(ui):
                         new_choice = len(backgrounds)-1
                     else:
                         new_choice = new_choice - 1
-            if new_choice != choice:
-                # erase old picture
-                image = backgrounds[choice].image
-                n = len(backgrounds)+3
-                for line in image.split('\n'):
-                    ui.write(1, n, ' ' * len(line), menu_color)
-                    n = n + 1
-                # clear the text area
-                ui.scroll_up(longest_name+6, 2, width-1, height-2, height-4)
-                choice = new_choice
+        elif (input_event.event_type == "mouse") and (input_event.left_click()):
+                if (2 <= input_event.x <= 4+longest_name):
+                    new_choice = input_event.y-2
+                    if 0 < new_choice < len(backgrounds):
+                        if new_choice == choice:
+                            return choice
+        if new_choice != choice:
+            # erase old picture
+            image = backgrounds[choice].image
+            n = len(backgrounds)+3
+            for line in image.split('\n'):
+                ui.write(1, n, ' ' * len(line), menu_color)
+                n = n + 1
+            # clear the text area
+            ui.scroll_up(longest_name+6, 2, width-1, height-2, height-4)
+            choice = new_choice
 
 if __name__ == "__main__":
     textui.invoke(background_selection)
