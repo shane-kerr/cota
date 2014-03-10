@@ -24,6 +24,6 @@ favored in the arena for their fierceness - as well as their long
 beards which often comes in exotic colors.
 
 ---
-skills Hide,Sneak,*,*,*
+skills Axe,Dodge,Sword - Long,*,*,*
 default Language - Germanic EDU*5
 default Tactics 25
