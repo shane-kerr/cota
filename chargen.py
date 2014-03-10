@@ -43,12 +43,27 @@ def load_all_backgrounds(directory="backgrounds"):
     backgrounds.sort(key=lambda x: x.name)
     return (backgrounds, longest_name)
 
+def show_keys_help(ui, width, height, keys):
+    text_color = ui.color_attr(textui.BLACK, textui.WHITE)
+    key_color = ui.color_attr(textui.WHITE, textui.WHITE, textui.BOLD)
+    total_len = len("Keys=") + len('/'.join(keys))
+    help_col = (width-total_len) // 2
+    ui.write(help_col, height-1, "Keys=", text_color)
+    help_col = help_col + len("Keys=")
+    while len(keys) > 1:
+        ui.write(help_col, height-1, keys[0], key_color)
+        help_col = help_col + len(keys[0])
+        ui.write(help_col, height-1, '/', text_color)
+        help_col = help_col + 1
+        keys = keys[1:]
+    ui.write(help_col, height-1, keys[0], key_color)
+
 def background_selection(ui):
     (backgrounds, longest_name) = load_all_backgrounds()
     ui.set_default_color_attr(textui.BLACK, textui.WHITE)
     ui.cursor_visible(False)
     menu_color = ui.color_attr(textui.BLACK, textui.WHITE)
-    choice_color = ui.color_attr(textui.WHITE, textui.BLACK)
+    choice_color = ui.color_attr(textui.WHITE, textui.BLACK, textui.BOLD)
     disabled_color = ui.color_attr(textui.BLACK, textui.WHITE, textui.BOLD)
     choice = 0
     refresh = True
@@ -59,6 +74,7 @@ def background_selection(ui):
             (width, height) = ui.get_screen_size()
             ui.write(1, 0, 
                      "So now you're a gladiator. But what were you before...")
+            show_keys_help(ui, width, height, ("Up", "Down", "Enter"))
             step_txt = "[Step 1 of 3]"
             ui.write(width - len(step_txt) - 1, height - 1, step_txt)
             refresh = False
