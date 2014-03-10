@@ -1,6 +1,7 @@
 import glob
 import textwrap
 import textui
+from keymap import *
 
 class background:
     def __init__(self, name, image, description):
@@ -36,27 +37,58 @@ def background_selection(ui):
     choice_color = ui.color_attr(textui.WHITE, textui.BLACK)
     disabled_color = ui.color_attr(textui.BLACK, textui.WHITE, textui.BOLD)
     choice = 0
-    for n in range(len(backgrounds)):
-        txt = backgrounds[n].name.ljust(longest_name)
-        if backgrounds[n].image == "x":
-            ui.write(2, 2+n, " " + txt + " ", disabled_color)
-        elif n == choice:
-            ui.write(2, 2+n, ">" + txt + "<", choice_color)
-        else:
-            ui.write(2, 2+n, " " + txt + " ", menu_color)
-    image = backgrounds[choice].image
-    n = len(backgrounds)+3
-    for line in image.split('\n'):
-        ui.write(1, n, line, menu_color)
-        n = n + 1
-    desc_paragraphs = backgrounds[choice].description.split('\n\n')
-    lines = textwrap.wrap(desc_paragraphs[0], width-(longest_name+8))
-    for paragraph in desc_paragraphs[1:]:
-        lines.append("")
-        lines.extend(textwrap.wrap(paragraph, width-(longest_name+8)))
-    for n in range(len(lines)):
-        ui.write(longest_name+6, n+2, lines[n])
-    ui.get_input()
+    while True:
+        for n in range(len(backgrounds)):
+            txt = backgrounds[n].name.ljust(longest_name)
+            if backgrounds[n].image == "x":
+                ui.write(2, 2+n, " " + txt + " ", disabled_color)
+            elif n == choice:
+                ui.write(2, 2+n, ">" + txt + "<", choice_color)
+            else:
+                ui.write(2, 2+n, " " + txt + " ", menu_color)
+        image = backgrounds[choice].image
+        n = len(backgrounds)+3
+        for line in image.split('\n'):
+            ui.write(1, n, line, menu_color)
+            n = n + 1
+        desc_paragraphs = backgrounds[choice].description.split('\n\n')
+        lines = textwrap.wrap(desc_paragraphs[0], width-(longest_name+8))
+        for paragraph in desc_paragraphs[1:]:
+            lines.append("")
+            lines.extend(textwrap.wrap(paragraph, width-(longest_name+8)))
+        for n in range(len(lines)):
+            ui.write(longest_name+6, n+2, lines[n])
+        input_event = ui.get_input()
+        if input_event.event_type == "keyboard":
+            new_choice = choice
+            if input_event.key is textui.KEY_ENTER:
+                return choice
+            elif input_event.key in keys_d:
+                # pick a new choice
+                new_choice = (choice + 1) % len(backgrounds)
+                while backgrounds[new_choice].image == "x":
+                    new_choice = (new_choice + 1) % len(backgrounds)
+            elif input_event.key in keys_u:
+                # pick a new choice
+                if choice == 0:
+                    new_choice = len(backgrounds)-1
+                else:
+                    new_choice = choice - 1
+                while backgrounds[new_choice].image == "x":
+                    if new_choice == 0:
+                        new_choice = len(backgrounds)-1
+                    else:
+                        new_choice = new_choice - 1
+            if new_choice != choice:
+                # erase old picture
+                image = backgrounds[choice].image
+                n = len(backgrounds)+3
+                for line in image.split('\n'):
+                    ui.write(1, n, ' ' * len(line), menu_color)
+                    n = n + 1
+                # clear the text area
+                ui.scroll_up(longest_name+6, 2, width-1, height-2, height-4)
+                choice = new_choice
 
 if __name__ == "__main__":
     textui.invoke(background_selection)
