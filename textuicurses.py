@@ -1,5 +1,6 @@
 import os
 import curses
+import locale
 from textuievents import *
 
 # we only support bold or non-bold attributes
@@ -38,6 +39,9 @@ class textui_curses:
         self.next_color_pair = 1
         self.default_color_attr = None
         self.set_default_color_attr(WHITE, BLACK)
+        # get our locale encoding (important for Python 2)
+        locale.setlocale(locale.LC_ALL, '')
+        self.locale_code = locale.getpreferredencoding()
     def _color_hash(self, fg, bg):
         return fg | (bg << 32)
     def color_attr(self, fg=WHITE, bg=BLACK, attr=NORMAL):
@@ -59,7 +63,7 @@ class textui_curses:
     def write(self, x, y, s, color_attr=None):
         if color_attr is None:
             color_attr = self.default_color_attr
-        self.scr.addstr(y, x, s, color_attr)
+        self.scr.addstr(y, x, s.encode(self.locale_code), color_attr)
     def cursor_position(self, x, y):
         self.scr.move(y, x)
     def cursor_visible(self, visible):
