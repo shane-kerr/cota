@@ -8,8 +8,6 @@ class background:
         self.name = name
         self.image = image
         self.description = description
-    def __cmp__(a, b):
-        return cmp(a.name, b.name)
 
 def load_all_backgrounds(directory="backgrounds"):
     backgrounds = [ ]
@@ -21,7 +19,7 @@ def load_all_backgrounds(directory="backgrounds"):
 #        name = name.strip()
         backgrounds.append(background(name, image, description.strip()))
         longest_name = max(len(name), longest_name)
-    backgrounds.sort()
+    backgrounds.sort(key=lambda x: x.name)
     return (backgrounds, longest_name)
 
 def background_selection(ui):
