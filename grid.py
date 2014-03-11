@@ -2,7 +2,7 @@ from items import Item
 import textui
 
 FLOOR_COLOR = (textui.WHITE, textui.BLACK, textui.NORMAL)
-WALL_COLOR = (textui.WHITE, textui.WHITE, textui.BOLD)
+WALL_COLOR = (textui.WHITE, textui.BLACK, textui.BOLD)
 DARK_COLOR = (textui.BLACK, textui.BLACK, textui.NORMAL)
 
 class Square:

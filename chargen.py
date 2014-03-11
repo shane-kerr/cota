@@ -3,6 +3,7 @@ import textwrap
 import textui
 from keymap import *
 from playerchar import *
+import display
 
 class background:
     def __init__(self, name, image, description, 
@@ -43,21 +44,6 @@ def load_all_backgrounds(directory="backgrounds"):
     backgrounds.sort(key=lambda x: x.name)
     return (backgrounds, longest_name)
 
-def show_keys_help(ui, width, height, keys):
-    text_color = ui.color_attr(textui.BLACK, textui.WHITE)
-    key_color = ui.color_attr(textui.WHITE, textui.WHITE, textui.BOLD)
-    total_len = len("Keys=") + len('/'.join(keys))
-    help_col = (width-total_len) // 2
-    ui.write(help_col, height-1, "Keys=", text_color)
-    help_col = help_col + len("Keys=")
-    while len(keys) > 1:
-        ui.write(help_col, height-1, keys[0], key_color)
-        help_col = help_col + len(keys[0])
-        ui.write(help_col, height-1, '/', text_color)
-        help_col = help_col + 1
-        keys = keys[1:]
-    ui.write(help_col, height-1, keys[0], key_color)
-
 def background_selection(ui):
     (backgrounds, longest_name) = load_all_backgrounds()
     ui.set_default_color_attr(textui.BLACK, textui.WHITE)
@@ -74,7 +60,7 @@ def background_selection(ui):
             (width, height) = ui.get_screen_size()
             instr_txt = "-=[ SELECT YOUR BACKGROUND ]=-"
             ui.write((width-len(instr_txt))//2, 0, instr_txt)
-            show_keys_help(ui, width, height, ("Up", "Down", "Enter"))
+            display.show_keys_help(ui, width, height, ("Up", "Down", "Enter"))
             step_txt = "[Step 1 of 3]"
             ui.write(width - len(step_txt) - 1, height - 1, step_txt)
             refresh = False
@@ -242,7 +228,7 @@ def do_occupation_skills(ui, bg, pc, skill_list):
             ui.write(2, 13, "Unassigned Skills:  %3d" % unassigned_skill_cnt)
             ui.write(2, 14, "Free Skill Points:  %3d" % free_skill_points)
             show_char_stats(ui, pc)
-            show_keys_help(ui, width, height, 
+            display.show_keys_help(ui, width, height, 
                            ("Esc", "Up", "Down", "Left", "Right", "Enter"))
             step_txt = "[Step 2 of 3]"
             ui.write(width - len(step_txt) - 1, height - 1, step_txt)
@@ -349,7 +335,7 @@ def do_other_skills(ui, bg, pc, skill_list):
             ui.write(2, 2, "Background: %s" % bg.name)
             ui.write(2, 14, "Free Skill Points:  %3d" % free_skill_points)
             show_char_stats(ui, pc)
-            show_keys_help(ui, width, height, 
+            display.show_keys_help(ui, width, height, 
                            ("Esc", "Up", "Down", "Left", "Right", "Enter"))
             step_txt = "[Step 3 of 3]"
             ui.write(width - len(step_txt) - 1, height - 1, step_txt)
@@ -429,6 +415,7 @@ def make_char(ui):
     while do_other_skills(ui, bg, pc, skill_list) == "prev":
         while do_occupation_skills(ui, bg, pc, skill_list) == "prev":
             bg = background_selection(ui)
+    return (skill_list, pc)
 
 if __name__ == "__main__":
     textui.invoke(make_char)
