@@ -66,7 +66,8 @@ RIGHTMOST_BUTTON_PRESSED     = 0x0002
 class COORD(ctypes.Structure):
     _fields_ = [
         ("X", SHORT),
-        ("Y", SHORT) ]
+        ("Y", SHORT)
+    ]
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686311%28v=vs.85%29.aspx
 class SMALL_RECT(ctypes.Structure):
@@ -74,7 +75,8 @@ class SMALL_RECT(ctypes.Structure):
         ("Left", SHORT),
         ("Top", SHORT),
         ("Right", SHORT),
-        ("Bottom", SHORT)]
+        ("Bottom", SHORT)
+    ]
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/ms682093%28v=vs.85%29.aspx
 class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
@@ -83,7 +85,8 @@ class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
         ("dwCursorPosition", COORD),
         ("wAttributes", WORD),
         ("srWindow", SMALL_RECT),
-        ("dwMaximumWindowSize", COORD)]
+        ("dwMaximumWindowSize", COORD)
+    ]
 
 # http://msdn.microsoft.com/en-us/library/windows/desktop/ms682013%28v=vs.85%29.aspx
 class Char(ctypes.Union):
@@ -228,25 +231,35 @@ class textui_win:
                                              ctypes.byref(srctScrollRect), None,
                                              coordDest, ctypes.byref(fill)) 
     def scroll_up(self, x1, y1, x2, y2, lines=1):
-        srctScrollRect = SMALL_RECT()
-        srctScrollRect.Left = x1
-        srctScrollRect.Top = y1+lines
-        srctScrollRect.Right = x2
-        srctScrollRect.Bottom = y2
-        coordDest = COORD()
-        coordDest.X = x1
-        coordDest.Y = y1
-        self._scroll(srctScrollRect, coordDest)
+        area_height = y2 - y1 + 1
+        max_scroll = area_height // 2
+        while lines > 0:
+            scroll_amt = min(lines, max_scroll)
+            srctScrollRect = SMALL_RECT()
+            srctScrollRect.Left = x1
+            srctScrollRect.Top = y1+scroll_amt
+            srctScrollRect.Right = x2
+            srctScrollRect.Bottom = y2
+            coordDest = COORD()
+            coordDest.X = x1
+            coordDest.Y = y1
+            self._scroll(srctScrollRect, coordDest)
+            lines = lines - scroll_amt
     def scroll_down(self, x1, y1, x2, y2, lines=1):
-        srctScrollRect = SMALL_RECT()
-        srctScrollRect.Left = x1
-        srctScrollRect.Top = y1
-        srctScrollRect.Right = x2
-        srctScrollRect.Bottom = y2-lines
-        coordDest = COORD()
-        coordDest.X = x1
-        coordDest.Y = y1+lines
-        self._scroll(srctScrollRect, coordDest)
+        area_height = y2 - y1 + 1
+        max_scroll = area_height // 2
+        while lines > 0:
+            scroll_amt = min(lines, max_scroll)
+            srctScrollRect = SMALL_RECT()
+            srctScrollRect.Left = x1
+            srctScrollRect.Top = y1
+            srctScrollRect.Right = x2
+            srctScrollRect.Bottom = y2 - scroll_amt
+            coordDest = COORD()
+            coordDest.X = x1
+            coordDest.Y = y1 + scroll_amt
+            lines = lines - scroll_amt
+            self._scroll(srctScrollRect, coordDest)
     # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685035%28v=vs.85%29.aspx
     # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685035%28v=vs.85%29.aspx
     def get_input(self, timeout_msec=None):
