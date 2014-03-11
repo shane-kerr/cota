@@ -141,6 +141,28 @@ def background_selection(ui):
             ui.scroll_up(longest_name+6, 2, width-1, height-2, height-4)
             choice = new_choice
 
+def show_char_stats(ui, pc):
+    # basic stats
+    ui.write(2, 4, "STR: %2d" % pc.STR)
+    ui.write(2, 5, "CON: %2d" % pc.CON)
+    ui.write(2, 6, "DEX: %2d" % pc.DEX)
+    ui.write(2, 7, "SIZ: %2d" % pc.SIZ)
+    ui.write(2, 8, "INT: %2d" % pc.INT)
+    ui.write(2, 9, "POW: %2d" % pc.POW)
+    ui.write(2, 10, "APP: %2d" % pc.APP)
+    ui.write(2, 11, "EDU: %2d" % pc.EDU)
+
+    # derived stats
+    ui.write(12, 4, "Sanity: %2d" % pc.Sanity)
+    ui.write(12, 5, "Idea:   %2d" % pc.Idea)
+    ui.write(12, 6, "Know:   %2d" % pc.Know)
+    ui.write(12, 7, "Luck:   %2d" % pc.Luck)
+
+    # and points
+    ui.write(12, 9, "HP:     %2d" % pc.HP)
+    ui.write(12, 10, "MP:     %2d" % pc.MP)
+    ui.write(12, 11, "SP:     %2d" % pc.Sanity)
+
 def show_skill_list(ui, width, height, ofs, cur, skill_list, pc, occupation):
     cur_on_color = ui.color_attr(textui.WHITE, textui.BLACK, textui.BOLD)
     if occupation:
@@ -217,8 +239,9 @@ def do_occupation_skills(ui, bg, pc, skill_list):
             instr_txt = "-=[ ASSIGN YOUR OCCUPATION SKILLS ]=-"
             ui.write((width-len(instr_txt))//2, 0, instr_txt)
             ui.write(2, 2, "Background: %s" % bg.name)
-            ui.write(2, 4, "Unassigned Skills:  %3d" % unassigned_skill_cnt)
-            ui.write(2, 5, "Free Skill Points:  %3d" % free_skill_points)
+            ui.write(2, 13, "Unassigned Skills:  %3d" % unassigned_skill_cnt)
+            ui.write(2, 14, "Free Skill Points:  %3d" % free_skill_points)
+            show_char_stats(ui, pc)
             show_keys_help(ui, width, height, 
                            ("Esc", "Up", "Down", "Left", "Right", "Enter"))
             step_txt = "[Step 2 of 3]"
@@ -252,9 +275,9 @@ def do_occupation_skills(ui, bg, pc, skill_list):
                             unassigned_skill_cnt = unassigned_skill_cnt + 1
                     pc.skill_levels[name] = new_level
                     free_skill_points = free_skill_points + points_gained
-                    ui.write(2, 4, "Unassigned Skills:  %3d" % 
+                    ui.write(2, 13, "Unassigned Skills:  %3d" % 
                                    unassigned_skill_cnt)
-                    ui.write(2, 5, "Free Skill Points:  %3d" % 
+                    ui.write(2, 14, "Free Skill Points:  %3d" % 
                                    free_skill_points)
             elif input_event.key in keys_r:
                 name = skill_list.names[cur]
@@ -269,9 +292,9 @@ def do_occupation_skills(ui, bg, pc, skill_list):
                     points_used = new_level - pc.skill_levels[name]
                     pc.skill_levels[name] = new_level
                     free_skill_points = free_skill_points - points_used
-                    ui.write(2, 4, "Unassigned Skills:  %3d" % 
+                    ui.write(2, 13, "Unassigned Skills:  %3d" % 
                                    unassigned_skill_cnt)
-                    ui.write(2, 5, "Free Skill Points:  %3d" % 
+                    ui.write(2, 14, "Free Skill Points:  %3d" % 
                                    free_skill_points)
             elif input_event.key in keys_ul:
                 # home
@@ -324,7 +347,8 @@ def do_other_skills(ui, bg, pc, skill_list):
             instr_txt = "-=[ ASSIGN YOUR PERSONAL INTEREST SKILLS ]=-"
             ui.write((width-len(instr_txt))//2, 0, instr_txt)
             ui.write(2, 2, "Background: %s" % bg.name)
-            ui.write(2, 5, "Free Skill Points:  %3d" % free_skill_points)
+            ui.write(2, 14, "Free Skill Points:  %3d" % free_skill_points)
+            show_char_stats(ui, pc)
             show_keys_help(ui, width, height, 
                            ("Esc", "Up", "Down", "Left", "Right", "Enter"))
             step_txt = "[Step 3 of 3]"
@@ -354,7 +378,7 @@ def do_other_skills(ui, bg, pc, skill_list):
                     points_gained = pc.skill_levels[name] - new_level
                     pc.skill_levels[name] = new_level
                     free_skill_points = free_skill_points + points_gained
-                    ui.write(2, 5, "Free Skill Points:  %3d" % 
+                    ui.write(2, 14, "Free Skill Points:  %3d" % 
                                    free_skill_points)
             elif input_event.key in keys_r:
                 name = skill_list.names[cur]
@@ -365,7 +389,7 @@ def do_other_skills(ui, bg, pc, skill_list):
                     points_used = new_level - pc.skill_levels[name]
                     pc.skill_levels[name] = new_level
                     free_skill_points = free_skill_points - points_used
-                    ui.write(2, 5, "Free Skill Points:  %3d" % 
+                    ui.write(2, 14, "Free Skill Points:  %3d" % 
                                    free_skill_points)
             elif input_event.key in keys_ul:
                 # home
