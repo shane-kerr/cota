@@ -13,13 +13,15 @@ class ItemCollection:
         else:
             self.next_uniq_id = max(uniq_id+1, self.next_uniq_id)
         return uniq_id
-    def create_item(self, symbol, color, transparent=False, uniq_id=None):
+    def create_item(self, symbol, color, 
+                          transparent=False, blocking=True, uniq_id=None):
         uniq_id = self._next_uniq_id(uniq_id)
-        item = Item(symbol, color, transparent, uniq_id)
+        item = Item(symbol, color, transparent, blocking, uniq_id)
         self.items[uniq_id] = item
         return item
     def copy_item(self, item):
-        return self.create_item(item.symbol, item.color, item.transparent)
+        return self.create_item(item.symbol, item.color, 
+                                item.transparent, item.blocking)
     def dump(self):
         items = [ ]
         for item in self.items.values():
@@ -33,6 +35,7 @@ class ItemCollection:
             hold_item = self.create_item(symbol=item["symbol"],
                                          color=undump_color(item["color"]),
                                          transparent=item["transparent"],
+                                         blocking=item["blocking"],
                                          uniq_id=item["_id"])
             hold_item.pos = undump_pos(item["pos"])
             hold_items.append(hold_item)
@@ -41,11 +44,12 @@ class ItemCollection:
         return hold_items
 
 class Item:
-    # TODO: add "blocking" attribute to allow/prevent movement
-    def __init__(self, symbol, color, transparent=False, uniq_id=None):
+    def __init__(self, symbol, color, 
+                       transparent=False, blocking=True, uniq_id=None):
         self.symbol = symbol
         self.color = color
         self.transparent = transparent
+        self.blocking = blocking
         self.pos = None
         self.uniq_id = uniq_id
     def __repr__(self):
@@ -53,12 +57,14 @@ class Item:
             pos_str = "(%d,%d)" % pos
         else:
             pos_str = "None"
-        return "<Item(%s,%s,%s,%s,%d)>" % (self.symbol, self.color, 
-                                    self.transparent, pos_str, self.uniq_id)
+        return "<Item(%s,%s,%s,%s,%s,%d)>" % (self.symbol, self.color, 
+                                    self.transparent, self.blocking, 
+                                    pos_str, self.uniq_id)
     def dump(self):
         return { "symbol": self.symbol, 
                  "color": dump_color(self.color),
                  "transparent": self.transparent, 
+                 "blocking": self.blocking,
                  "pos": dump_pos(self.pos), 
                  "_id": self.uniq_id, } 
     def view(self):

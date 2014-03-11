@@ -3,6 +3,7 @@ import textui
 
 FLOOR_COLOR = (textui.WHITE, textui.BLACK, textui.NORMAL)
 WALL_COLOR = (textui.WHITE, textui.BLACK, textui.BOLD)
+DOOR_COLOR = (textui.YELLOW, textui.BLACK, textui.NORMAL)
 DARK_COLOR = (textui.BLACK, textui.BLACK, textui.NORMAL)
 
 class Square:
@@ -25,6 +26,11 @@ class Square:
             if not thing.transparent:
                 return False
         return True
+    def isblocked(self):
+        for thing in self.stuff:
+            if thing.blocking:
+                return True
+        return False
     def stuff_uniq_ids(self):
         stuff_list = [ ]
         for thing in self.stuff:
@@ -78,7 +84,7 @@ class Map:
         item.pos = None
 
     def can_move_onto(self, x, y):
-        return self.grid[x][y].isempty()
+        return not self.grid[x][y].isblocked()
 
     def can_see_through(self, x, y):
         return self.grid[x][y].istransparent()

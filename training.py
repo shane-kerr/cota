@@ -4,13 +4,55 @@ import display
 import items
 import grid
 
-PLAYER_COLOR=(textui.RED, textui.BLACK, textui.BOLD)
+PLAYER_COLOR=(textui.YELLOW, textui.BLACK, textui.BOLD)
+
+school_map = """
++------------------------------------------------------------------------------+
+|                                                                              |
+|                                        +----+-------+---------------+----+   |
+|                                        |    |       |               |    |   |
+|                                        |    D       |               D    |   |
+|                                        |    |       |               |    |   |
+|                                        |    +---D---+------D--------+----+   |
+|                                        |    |                       |    |   |
+|                                        |    |                       |    |   |
++                                      +-+----+                       |    |   |
+|                                      D D                            D    |   |
++                                      +-+----+                       |    |   |
+|                                        |    |                       |    |   |
+|                                        |    |                       |    |   |
+|                                        |    |                       |    |   |
+|                                        |    |                       |    |   |
+|    +-----------+                       +--+-+--------+  +-----------+-D--+   |
+|    |           |                       |  |                         |    |   |
+|    |           +                       |  D                         |    |   |
+|    |                                   |  |                         |    |   |
+|    +D+D+D+D+   +                       +--+-------------------------+----+   |
+|    | | | | |   |                                                             |
+|    +-+-+-+-+---+                                                             |
++------------------------------------------------------------------------------+
+"""
+
+def apply_school_map(m, stuff):
+    global school_map
+
+    txt = school_map.strip()
+    rows = txt.split("\n")
+    for y in range(len(rows)):
+        for x in range(len(rows[y])):
+            if rows[y][x] in "+-|":
+                wall = stuff.create_item('#', grid.WALL_COLOR)
+                m.drop_item_at(wall, x, y)
+            elif rows[y][x] == 'D':
+                wall = stuff.create_item('+', grid.DOOR_COLOR, blocking=False)
+                m.drop_item_at(wall, x, y)
 
 def school(ui, skill_list, pc):
     ui.clear()
     stuff = items.ItemCollection()
     m = grid.Map(80, 24, stuff)
-    m.enclose()
+    apply_school_map(m, stuff)
+#    m.enclose()
     player = stuff.create_item('@', PLAYER_COLOR, True)
     player_x = 2
     player_y = 2
