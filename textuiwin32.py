@@ -168,42 +168,97 @@ class textui_win:
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms683171%28v=vs.85%29.aspx
         csbi = CONSOLE_SCREEN_BUFFER_INFO()
         self.kern.GetConsoleScreenBufferInfo(self.hOut, ctypes.byref(csbi))
-        self.start_attr = csbi.wAttributes
+        # set up our understanding of the screen as it is
+        self.default_color_attr = csbi.wAttributes
+        self.wide, self.high, self.console_map, self.cursor_x, self.cursor_y =\
+            self._get_console_info(csbi)
+        # call again to save stuff for restore on exit
+        d1, d2, self.initial_screen, self.start_cursor_x, self.start_cursor_y =\
+            self._get_console_info(csbi)
         cci = CONSOLE_CURSOR_INFO()
         self.kern.GetConsoleCursorInfo(self.hOut, ctypes.byref(cci))
         self.start_cursor_info = cci
-        dwMode = DWORD(ENABLE_WINDOW_INPUT| ENABLE_MOUSE_INPUT)
+        # allow input events on resize and mouse stuff
         self.kern.SetConsoleMode(self.hIn, 
                                  ENABLE_WINDOW_INPUT| ENABLE_MOUSE_INPUT)
-        self.default_color_attr = None
-        self.set_default_color_attr(WHITE, BLACK)
     def restore(self):
-        self.default_color_attr = self.start_attr
-        self.kern.SetConsoleTextAttribute(self.hOut, self.start_attr)
+        self.cursor_x = self.start_cursor_x
+        self.cursor_y = self.start_cursor_y
+        self.console_map = self.initial_screen
+        self._write_console_map()
         self.kern.SetConsoleCursorInfo(self.hOut, 
                                        ctypes.byref(self.start_cursor_info))
     def color_attr(self, fg=WHITE, bg=BLACK, attr=NORMAL):
         return fg | attr | bg << 4
     def set_default_color_attr(self, fg=WHITE, bg=BLACK, attr=NORMAL):
         self.default_color_attr = self.color_attr(fg, bg, attr)
+    def _get_console_info(self, csbi=None):
+        if csbi is None:
+            csbi = CONSOLE_SCREEN_BUFFER_INFO()
+            self.kern.GetConsoleScreenBufferInfo(self.hOut, ctypes.byref(csbi))
+        cursor_x = csbi.dwCursorPosition.X
+        cursor_y = csbi.dwCursorPosition.Y
+        wide = csbi.srWindow.Right - csbi.srWindow.Left + 1
+        high = csbi.srWindow.Bottom - csbi.srWindow.Top + 1
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms684965%28v=vs.85%29.aspx
+        MAP_ARRAY = CHAR_INFO * (wide * high)
+        console_map = MAP_ARRAY()
+        dwBufferSize = COORD()
+        dwBufferSize.X = wide
+        dwBufferSize.Y = high
+        dwBufferCoord = COORD()
+        dwBufferCoord.X = 0
+        dwBufferCoord.Y = 0
+        readRegion = SMALL_RECT()
+        readRegion.Left = 0
+        readRegion.Top = 0
+        readRegion.Right = wide-1 
+        readRegion.Bottom = high-1 
+        self.kern.ReadConsoleOutputW(self.hOut, 
+                                     ctypes.byref(console_map),
+                                     dwBufferSize, dwBufferCoord, 
+                                     ctypes.byref(readRegion))
+        return (wide, high, console_map, cursor_x, cursor_y)
+    def _write_console_map(self):
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms687404%28v=vs.85%29.aspx
+        dwBufferSize = COORD()
+        dwBufferSize.X = self.wide
+        dwBufferSize.Y = self.high
+        dwBufferCoord = COORD()
+        dwBufferCoord.X = 0
+        dwBufferCoord.Y = 0
+        writeRegion = SMALL_RECT()
+        writeRegion.Left = 0
+        writeRegion.Top = 0
+        writeRegion.Right = self.wide-1 
+        writeRegion.Bottom = self.high-1 
+        self.kern.WriteConsoleOutputW(self.hOut,
+                                      ctypes.byref(self.console_map),
+                                      dwBufferSize, dwBufferCoord, 
+                                      ctypes.byref(writeRegion))
+        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686025%28v=vs.85%29.aspx
+        pos = COORD()
+        pos.X = self.cursor_x
+        pos.Y = self.cursor_y
+        self.kern.SetConsoleCursorPosition(self.hOut, pos)
     def clear(self):
-        (width, height) = self.get_screen_size()
-        self.write(0, 0, ' ' * (width * height))
+        for ci in self.console_map:
+            ci.Char.UnicodeChar = ' '
+            ci.Attributes = self.default_color_attr
         self.cursor_position(0, 0)
+#        self._write_console_map()
     def write(self, x, y, s, color_attr=None):
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686047%28v=vs.85%29.aspx
         if color_attr is None:
             color_attr = self.default_color_attr
-        self.kern.SetConsoleTextAttribute(self.hOut, color_attr)
-        self.cursor_position(x, y)
-        sys.stdout.write(s)
-        sys.stdout.flush()
+        scr_ofs = x + (y * self.wide)
+        for c in s:
+            self.console_map[scr_ofs].Char.UnicodeChar = c
+            self.console_map[scr_ofs].Attributes = color_attr
+            scr_ofs = scr_ofs + 1
     def cursor_position(self, x, y):
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686025%28v=vs.85%29.aspx
-        pos = COORD()
-        pos.X = x
-        pos.Y = y
-        self.kern.SetConsoleCursorPosition(self.hOut, pos)
+        self.cursor_x = x
+        self.cursor_y = y
     def cursor_visible(self, visible):
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms683163%28v=vs.85%29.aspx
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686019%28v=vs.85%29.aspx
@@ -217,52 +272,53 @@ class textui_win:
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms683171%28v=vs.85%29.aspx
         csbi = CONSOLE_SCREEN_BUFFER_INFO()
         self.kern.GetConsoleScreenBufferInfo(self.hOut, ctypes.byref(csbi))
-        columns = csbi.srWindow.Right - csbi.srWindow.Left + 1
-        rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1
-        return (columns, rows)
-    def _scroll(self, srctScrollRect, coordDest):
-        # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685107%28v=vs.85%29.aspx
-        fill = CHAR_INFO()
-        fill_char = Char()
-        fill_char.AsciiChar = b" "
-        fill.Char = fill_char
-        fill.Attributes = self.default_color_attr
-        self.kern.ScrollConsoleScreenBufferW(self.hOut, 
-                                             ctypes.byref(srctScrollRect), None,
-                                             coordDest, ctypes.byref(fill)) 
+        width = csbi.srWindow.Right - csbi.srWindow.Left + 1
+        height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1
+        assert((self.console_map is None) or 
+               ((self.wide == width) and (self.high == height)))
+        return (width, height)
     def scroll_up(self, x1, y1, x2, y2, lines=1):
-        area_height = y2 - y1 + 1
-        max_scroll = area_height // 2
-        while lines > 0:
-            scroll_amt = min(lines, max_scroll)
-            srctScrollRect = SMALL_RECT()
-            srctScrollRect.Left = x1
-            srctScrollRect.Top = y1+scroll_amt
-            srctScrollRect.Right = x2
-            srctScrollRect.Bottom = y2
-            coordDest = COORD()
-            coordDest.X = x1
-            coordDest.Y = y1
-            self._scroll(srctScrollRect, coordDest)
-            lines = lines - scroll_amt
+        height = y2 - y1 + 1
+        width = x2 - x1 + 1
+        if lines < height:
+            src_ofs = x1 + ((y1+lines) * self.wide)
+            dst_ofs = x1 + (y1 * self.wide)
+            for n in range(height - lines):
+                self.console_map[dst_ofs:dst_ofs+width] = \
+                    self.console_map[src_ofs:src_ofs+width]
+                src_ofs = src_ofs + self.wide
+                dst_ofs = dst_ofs + self.wide
+        LINE_BUF = CHAR_INFO * width
+        empty_line = LINE_BUF()
+        for n in range(width):
+            empty_line[n].Char.UnicodeChar = ' '
+            empty_line[n].Attributes = self.default_color_attr
+        for n in range(lines):
+            dst_ofs = x1 + ((y2 - n) * self.wide)
+            self.console_map[dst_ofs:dst_ofs+width] = empty_line[:]
     def scroll_down(self, x1, y1, x2, y2, lines=1):
-        area_height = y2 - y1 + 1
-        max_scroll = area_height // 2
-        while lines > 0:
-            scroll_amt = min(lines, max_scroll)
-            srctScrollRect = SMALL_RECT()
-            srctScrollRect.Left = x1
-            srctScrollRect.Top = y1
-            srctScrollRect.Right = x2
-            srctScrollRect.Bottom = y2 - scroll_amt
-            coordDest = COORD()
-            coordDest.X = x1
-            coordDest.Y = y1 + scroll_amt
-            lines = lines - scroll_amt
-            self._scroll(srctScrollRect, coordDest)
+        height = y2 - y1 + 1
+        width = x2 - x1 + 1
+        if lines < height:
+            src_ofs = x1 + ((y2-lines) * self.wide)
+            dst_ofs = x1 + (y2 * self.wide)
+            for n in range(height - lines):
+                self.console_map[dst_ofs:dst_ofs+width] = \
+                    self.console_map[src_ofs:src_ofs+width]
+                src_ofs = src_ofs - self.wide
+                dst_ofs = dst_ofs - self.wide
+        LINE_BUF = CHAR_INFO * width
+        empty_line = LINE_BUF()
+        for n in range(width):
+            empty_line[n].Char.UnicodeChar = ' '
+            empty_line[n].Attributes = self.default_color_attr
+        for n in range(lines):
+            dst_ofs = x1 + ((y1+n) * self.wide)
+            self.console_map[dst_ofs:dst_ofs+width] = empty_line[:]
     # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685035%28v=vs.85%29.aspx
     # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685035%28v=vs.85%29.aspx
     def get_input(self, timeout_msec=None):
+        self._write_console_map()
         buf = INPUT_RECORD()
         while True:
             while True:
@@ -276,6 +332,9 @@ class textui_win:
                                             ctypes.byref(numberOfEventsRead))
                 if numberOfEventsRead.value == 1: break
             if buf.EventType == WINDOW_BUFFER_SIZE_EVENT:
+                # if we've resized, we need to refresh our console map
+                self.wide, self.high, self.console_map, \
+                        self.cursor_x, self.cursor_y = self._get_console_info()
                 return textui_resize_event()
             if buf.EventType == KEY_EVENT:
                 key_event = buf.Event.KeyEvent
@@ -298,10 +357,8 @@ class textui_win:
 
 def textui_win_invoke(func, *args):
     ui = textui_win()
-    ui.clear()
     try:
         func(ui, *args)
     finally:
         ui.restore()
-        ui.clear()
 
