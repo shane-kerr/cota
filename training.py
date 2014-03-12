@@ -85,6 +85,8 @@ def school(ui, skill_list, pc):
             elif event.key in keymap.keys_dr:
                 new_x = player_x + 1
                 new_y = player_y + 1
+            elif event.key == 27:
+                return
         if m.can_move_onto(new_x, new_y):
             m.pickup_item(player)
             player_x, player_y = new_x, new_y
