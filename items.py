@@ -1,4 +1,6 @@
 import weakref
+import dice
+#import re
 
 class ItemCollection:
     def __init__(self, next_uniq_id=500000):
@@ -70,3 +72,56 @@ class Item:
     def view(self):
         return (self.symbol, self.color)
 
+class ItemDefinitions:
+    def __init__(self, skill_list, filename="items.txt"):
+        self.defs = { }
+
+        f = open(filename, "r")
+        # TODO: catch exceptions on open
+        contents = f.read()
+        for item_def_info in contents.strip().split("\n\n"):
+            item_def_info = item_def_info.strip()
+            item_attrs = { }
+            attrs, desc = item_def_info.split("---\n")
+            for attr in attrs.strip().split("\n"):
+                attr_name, attr_val = attr.split(":", 1)
+                if attr_name == "name":
+                    item_attrs["name"] = attr_val.strip()
+                elif attr_name == "weight":
+                    weight_amt, weight_type = attr_val.split()
+                    assert(weight_type == "libra")
+                    item_attrs["weight"] = float(weight_amt)
+                elif attr_name == "skill":
+                    item_attrs["skill"] = [ ]
+                    for skill_name in attr_val.split(","):
+                        skill_name = skill_name.strip()
+                        assert(skill_name in skill_list.defaults)
+                        item_attrs["skill"].append(skill_name)
+                elif attr_name == "www":
+                    pass
+                elif attr_name == "damage":
+                    item_attrs["damage"] = { }
+                    for damage in attr_val.split(","):
+                        damage = damage.strip()
+                        if damage == "entangle":
+                            item_attrs["damage"]["entangle"] = True
+                        else:
+                            damage_amt, damage_type = damage.split()
+                            assert(damage_type in ("impale", "crush", "cut"))
+                            item_attrs["damage"][damage_type] = \
+                                dice.die(damage_amt)
+                elif attr_name == "equip":
+                    item_attrs["equip"] = [ ]
+                    for equip in attr_val.split(","):
+                        equip = equip.strip()
+                        assert(equip in ("1h weapon", "2h weapon", "hands"))
+                        item_attrs["equip"].append(equip)
+            item_attrs["descr"] = ' '.join(desc.split("\n"))
+
+        self.defs[item_attrs["name"]] = item_attrs
+
+if __name__ == "__main__":
+    import playerchar
+
+    skill_list = playerchar.Skills()
+    item_defs = ItemDefinitions(skill_list)

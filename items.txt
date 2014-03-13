@@ -1,0 +1,133 @@
+name: Dolabra (Spiked Axe)
+weight: 6 libra
+equip: 1h weapon
+damage: 1D6+1 cut, 1D6 impale
+skill: Axe
+www: https://en.wikipedia.org/wiki/Dolabra
+www: https://en.wikipedia.org/wiki/War_axe
+---
+The dolabra is a versatile axe used by the people in Italy since
+ancient times. The dolabra could serve as a pickaxe used by miners and
+excavators, a priest's implement for ritual religious slaughtering of
+animals and as an entrenching tool (mattock) used in Roman infantry
+tactics.
+
+name: Cestus (Weighted Gloves)
+weight: 1 libra
+equip: hands, 1h weapon
+damage: 1D6 crush
+skill: Punch
+www: https://en.wikipedia.org/wiki/Cestus
+---
+A cestus is an ancient battle glove, sometimes used in pankration.
+They were worn as are today's boxing gloves, but were made with
+leather strips and sometimes filled with iron plates or fitted with
+blades or spikes, and used as weapons.
+
+name: Club
+weight: 4 libra
+equip: 1h weapon
+damage: 1D6 crush
+skill: Sword - Long
+www: https://en.wikipedia.org/wiki/Club_%28weapon%29
+---
+A club is among the simplest of all weapons. A club is essentially a
+short staff, or stick, usually made of wood, and wielded as a weapon
+since prehistoric times.
+
+name: Pilum (Javelin)
+weight: 9 libra
+equip: 1h weapon
+damage: 1D8 impale
+www: https://en.wikipedia.org/wiki/Pilum
+skill: Pilum, Spear, Throw
+---
+The pilum was a javelin commonly used by the Roman army in ancient
+times. It was generally about 2 metres long overall, consisting of an
+iron shank about 7 millimetres in diameter and 60 centimetres long
+with pyramidal head. The shank was joined to the wooded shaft by
+either a socket or a flat tang.
+
+name: Pugio (Dagger)
+weight: 0.5 libra
+equip: 1h weapon
+damage: 1D6 impale, 1D4 cut
+www: https://en.wikipedia.org/wiki/Pugio
+skill: Dagger
+---
+The pugio was a dagger used by Roman soldiers as a sidearm. Officials
+of the empire took to wearing ornate daggers in the performance of
+their offices, and some would wear concealed daggers as a defense
+against contingencies. The dagger was a common weapon of assassination
+and suicide; for example, the conspirators who stabbed Julius Caesar
+used pugiones.
+
+name: Hasta (Spear)
+weight: 5.5 libra
+equip: 2h weapon
+damage: 1D10 impale
+skill: Spear
+www: https://en.wikipedia.org/wiki/Hasta_%28spear%29
+---
+Hasta is a Latin word meaning spear. Hastae were carried by early
+Roman Legionaries, in particular they were carried by and gave their
+name to those Roman soldiers known as Hastati. As opposed to the
+pilum, verutum or lancea, the hasta was not thrown, but used for
+thrusting.
+
+name: Gladius (Short Sword)
+weight: 3 libra
+equip: 1h weapon
+damage: 1D6+1 impale, 1D6 cut
+skill: Sword - Short
+www: https://en.wikipedia.org/wiki/Gladius
+---
+Gladius is used to the primary sword of Ancient Roman foot soldiers.
+The soldier generally led with his shield and thrust with his sword.
+All types of gladius appear to have also been suitable for cutting and
+chopping motions as well as for thrusting.
+
+name: Khopesh (Sickle Sword)
+weight: 4 libra
+equip: 1h weapon
+damage: 1D8 cut
+www: https://en.wikipedia.org/wiki/Kopesh
+skill: Sword - Long
+---
+Khopesh is an Egyptian sickle-sword that evolved from battle axes. A
+typical khopesh is 50–60 cm (20–24 inches) in length, though smaller
+examples do also exist. This blade was designed for hooking an
+opponent's shield or disarming them. These weapons changed from bronze
+to iron in the late period.
+
+name: Spatha (Long Sword)
+weight: 4 libra
+equip: 1h weapon
+damage: 1D8 cut, 1D6 impale
+skill: Sword - Long
+www: https://en.wikipedia.org/wiki/Spatha
+---
+The spatha was a type of straight and long sword, measuring between
+0.75 m and 1 m.
+
+name: Fuscina (Trident)
+weight: 7 libra
+equip: 1h weapon
+damage: 1D10+1 impale
+skill: Trident
+www: https://en.wikipedia.org/wiki/Fuscina
+---
+A trident is a three-pronged spear. It is used for spear fishing and
+historically as a polearm. The trident is the weapon of Neptune, the
+god of the sea.
+
+name: Iaculum (Casting Net)
+weight: 7 libra
+equip: 1h weapon
+damage: entangle
+Skill: Net
+www: http://www.tribunesandtriumphs.org/gladiators/gladiator-weapons.htm
+www: http://en.wikipedia.org/wiki/Retiarius
+---
+The iaculum was a weighted casting net - the weapon of a retiarius.
+

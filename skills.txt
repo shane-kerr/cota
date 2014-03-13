@@ -23,6 +23,7 @@ Net                     5
 Shield - Small          15
 Shield - Medium         15
 Shield - Large          15
+Spear                   15
 Sword - Long            20
 Sword - Short           15
 Trident                 5
@@ -30,9 +31,9 @@ Trident                 5
 ---
 
 # unarmed combat
-Fist                    25
-Head Butt               10
+Punch                   25
 Kick                    15
+Head Butt               10
 
 ---
 
