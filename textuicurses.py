@@ -123,5 +123,6 @@ def textui_curses_invoke(func, *args):
     # if we wanted real-time mouse positioning we could do this
     #if os.environ.get('TERM', '') == 'xterm':
     #    os.environ['TERM'] = 'xterm-1003'
+    os.environ['ESCDELAY'] = '25'
     curses.wrapper(_textui_wrapper_callback, func, args)
 
