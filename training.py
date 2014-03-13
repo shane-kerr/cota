@@ -44,7 +44,8 @@ def apply_school_map(m, stuff):
                 wall = stuff.create_item('#', grid.WALL_COLOR)
                 m.drop_item_at(wall, x, y)
             elif rows[y][x] == 'D':
-                wall = stuff.create_item('+', grid.DOOR_COLOR, blocking=False)
+                wall = stuff.create_item('+', grid.DOOR_COLOR, blocking=False, 
+                                         name="door")
                 m.drop_item_at(wall, x, y)
 
 def school(ui, skill_list, pc):
@@ -106,6 +107,10 @@ def school(ui, skill_list, pc):
         if m.can_move_onto(new_x, new_y):
             m.pickup_item(player)
             player_x, player_y = new_x, new_y
+            things = m.items_at(player_x, player_y)
+            if things:
+                for n in range(len(things)):
+                    ui.write(1, height-2-n, "Item here: %s" % things[n].name)
             m.drop_item_at(player, player_x, player_y)
         
 

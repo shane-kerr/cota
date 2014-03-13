@@ -85,6 +85,9 @@ class Map:
         self.grid[item.pos[0]][item.pos[1]].pickup(item)
         item.pos = None
 
+    def items_at(self, x, y):
+        return self.grid[x][y].stuff
+
     def can_move_onto(self, x, y):
         return not self.grid[x][y].isblocked()
 

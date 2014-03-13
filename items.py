@@ -76,11 +76,13 @@ class ItemCollection:
     def create_item_from_def(self, def_name):
         attrs = self.item_defs.defs[def_name.lower()]
         return self.create_item(attrs["symbol"], attrs["color"], 
-                                transparent=True, blocking=False)
+                                transparent=True, blocking=False, 
+                                name=attrs["name"])
     def create_item(self, symbol, color, 
-                          transparent=False, blocking=True, uniq_id=None):
+                          transparent=False, blocking=True, uniq_id=None,
+                          name=None):
         uniq_id = self._next_uniq_id(uniq_id)
-        item = Item(symbol, color, transparent, blocking, uniq_id)
+        item = Item(symbol, color, transparent, blocking, uniq_id, name=name)
         self.items[uniq_id] = item
         return item
     def copy_item(self, item):
@@ -109,13 +111,15 @@ class ItemCollection:
 
 class Item:
     def __init__(self, symbol, color, 
-                       transparent=False, blocking=True, uniq_id=None):
+                       transparent=False, blocking=True, uniq_id=None,
+                       name=None):
         self.symbol = symbol
         self.color = color
         self.transparent = transparent
         self.blocking = blocking
         self.pos = None
         self.uniq_id = uniq_id
+        self.name = name
     def __repr__(self):
         if self.pos:
             pos_str = "(%d,%d)" % pos
@@ -129,6 +133,7 @@ class Item:
                  "color": dump_color(self.color),
                  "transparent": self.transparent, 
                  "blocking": self.blocking,
+                 "name": self.name, 
                  "pos": dump_pos(self.pos), 
                  "_id": self.uniq_id, } 
     def view(self):
