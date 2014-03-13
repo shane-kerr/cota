@@ -5,6 +5,7 @@ FLOOR_COLOR = (textui.WHITE, textui.BLACK, textui.NORMAL)
 WALL_COLOR = (textui.WHITE, textui.BLACK, textui.BOLD)
 DOOR_COLOR = (textui.YELLOW, textui.BLACK, textui.NORMAL)
 DARK_COLOR = (textui.BLACK, textui.BLACK, textui.NORMAL)
+MEMORY_COLOR = (textui.BLACK, textui.BLACK, textui.BOLD)
 
 class Square:
     def __init__(self):
@@ -240,4 +241,75 @@ class Map:
                             view_col.append(square_view)
             v.append(view_col)
         return v
+
+class MapMemory:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.grid = [ ]
+        nowhere = (' ', DARK_COLOR)
+        for col in range(width):
+            new_col = [ ]
+            for row in range(height):
+                new_col.append(nowhere)
+            self.grid.append(new_col)
+
+
+    def add_view(self, x, y, view):
+        nowhere = (' ', DARK_COLOR)
+        for col in range(len(view)):
+            for row in range(len(view[0])):
+                square = view[col][row]
+                if square != nowhere:
+                    self.grid[x+col][y+row] = square
+
+    def read_memory(self, x0, y0, x1, y1):
+        wide = x1 - x0 + 1
+        high = y1 - y0 + 1
+        nowhere = (' ', DARK_COLOR)
+        nowhere_col = [ nowhere, ] * high
+        view = []
+        for x in range(x0, 0):
+            view.append(nowhere_col)
+        for x in range(max(x0, 0), min(x1+1, self.width)):
+            if y0 < 0:
+                col = [ nowhere, ] * -y0
+            else:
+                col = [ ]
+            col.extend(self.grid[x][max(y0, 0):min(y1+1, self.height)])
+            if y1 >= self.height:
+                col.extend([ nowhere, ] * (y1 - self.height + 1))
+            view.append(col)
+        for x in range(self.width-1, x1):
+            view.append(nowhere_col)
+        return view
+
+    def update_memory(self, view, x_add, y_add, x0, y0, x1, y1):
+        # XXX: need to remove this
+        self.add_view(x_add, y_add, view)
+        x0_view = x_add
+        y0_view = y_add
+        x1_view = x0_view + len(view) - 1
+        y1_view = y0_view + len(view[0]) - 1
+        # get our old view
+        new_view = self.read_memory(x0, y0, x1, y1)
+        # now go through and every place that we cannot currently see
+        # change the color to a dark gray
+        nowhere = (' ', DARK_COLOR)
+        x_ofs = 0
+        for x in range(x0, x1+1):
+            y_ofs = 0
+            for y in range(y0, y1+1):
+                if (x >= x0_view) and (x <= x1_view) and \
+                   (y >= y0_view) and (y <= y1_view):
+                    square = view[x-x0_view][y-y0_view]
+                    if square == nowhere:
+                        new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
+                                                  MEMORY_COLOR)
+                else:
+                    new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
+                                              MEMORY_COLOR)
+                y_ofs = y_ofs + 1
+            x_ofs = x_ofs + 1
+        return new_view
 

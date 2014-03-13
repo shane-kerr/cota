@@ -17,34 +17,36 @@ def show_keys_help(ui, width, height, keys):
 
 def main_display(ui, width, height, view, pc, history):
     # show the map
-    for x in range(16):
-        for y in range(16):
+    for x in range(33):
+        for y in range(17):
             (c, a) = view[x][y]
             ui.write(x+1, y+1, c, ui.color_attr(a[0], a[1], a[2]))
 
+
     # show the basic stats
-    ui.write(34, 2, "STR: %2d" % pc.STR)
-    ui.write(34, 3, "CON: %2d" % pc.CON)
-    ui.write(34, 4, "DEX: %2d" % pc.DEX)
-    ui.write(34, 5, "SIZ: %2d" % pc.SIZ)
-    ui.write(34, 6, "INT: %2d" % pc.INT)
-    ui.write(34, 7, "POW: %2d" % pc.POW)
-    ui.write(34, 8, "APP: %2d" % pc.APP)
-    ui.write(34, 9, "EDU: %2d" % pc.EDU)
+    ui.write(38, 2, "STR: %2d" % pc.STR)
+    ui.write(38, 3, "CON: %2d" % pc.CON)
+    ui.write(38, 4, "DEX: %2d" % pc.DEX)
+    ui.write(38, 5, "SIZ: %2d" % pc.SIZ)
+    ui.write(38, 6, "INT: %2d" % pc.INT)
+    ui.write(38, 7, "POW: %2d" % pc.POW)
+    ui.write(38, 8, "APP: %2d" % pc.APP)
+    ui.write(38, 9, "EDU: %2d" % pc.EDU)
 
     # derived stats
-    ui.write(44, 2, "Sanity: %2d" % pc.Sanity)
-    ui.write(44, 3, "Idea:   %2d" % pc.Idea)
-    ui.write(44, 4, "Know:   %2d" % pc.Know)
-    ui.write(44, 5, "Luck:   %2d" % pc.Luck)
+    ui.write(48, 2, "Sanity: %2d" % pc.Sanity)
+    ui.write(48, 3, "Idea:   %2d" % pc.Idea)
+    ui.write(48, 4, "Know:   %2d" % pc.Know)
+    ui.write(48, 5, "Luck:   %2d" % pc.Luck)
 
     # and points
-    ui.write(44, 7, "HP:     %2d" % pc.HP)
-    ui.write(44, 8, "MP:     %2d" % pc.MP)
-    ui.write(44, 9, "SP:     %2d" % pc.Sanity)
+    ui.write(48, 7, "HP:     %2d" % pc.HP)
+    ui.write(48, 8, "MP:     %2d" % pc.MP)
+    ui.write(48, 9, "SP:     %2d" % pc.Sanity)
 
     # show our key help
     show_keys_help(ui, width, height, 
                    ("Esc", "Up", "Down", "Left", "Right", "i"))
 
-    ui.cursor_position(8, 8)
+    ui.cursor_position(17, 9)
+#    ui.cursor_visible(True)

@@ -52,6 +52,7 @@ def school(ui, skill_list, pc):
     stuff = items.ItemCollection()
     m = grid.Map(80, 24, stuff)
     apply_school_map(m, stuff)
+    mm = grid.MapMemory(m.width, m.height)
 #    m.enclose()
     player = stuff.create_item('@', PLAYER_COLOR, True)
     player_x = 2
@@ -59,7 +60,15 @@ def school(ui, skill_list, pc):
     m.drop_item_at(player, player_x, player_y)
     (width, height) = ui.get_screen_size()
     while True:
-        view = m.view(player_x, player_y, 17, 17, 8)
+#        view = m.view(player_x, player_y, 17, 17, 8)
+#        mm.add_view(player_x - 8, player_y - 8, view)
+#        mm_view = mm.read_memory(player_x-16, player_y-8, 
+#                                 player_x+16, player_y+8)
+        view = mm.update_memory(m.view(player_x, player_y, 17, 17, 8),
+                                player_x-8, player_y-8,
+                                player_x-16, player_y-8,
+                                player_x+16, player_y+8)
+
         display.main_display(ui, width, height, view, pc, [])
         event = ui.get_input()
         new_x = player_x
