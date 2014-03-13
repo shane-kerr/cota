@@ -122,10 +122,10 @@ class Item:
         self.name = name
     def __repr__(self):
         if self.pos:
-            pos_str = "(%d,%d)" % pos
+            pos_str = "(%d,%d)" % self.pos
         else:
             pos_str = "None"
-        return "<Item(%s,%s,%s,%s,%s,%d)>" % (self.symbol, self.color, 
+        return "<Item('%s',%s,%s,%s,%s,%d)>" % (self.symbol, self.color,
                                     self.transparent, self.blocking, 
                                     pos_str, self.uniq_id)
     def dump(self):
