@@ -243,14 +243,13 @@ class Map:
         return v
 
 class MapMemory:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+    def __init__(self, m):
+        self.m = m
         self.grid = [ ]
         nowhere = (' ', DARK_COLOR)
-        for col in range(width):
+        for col in range(m.width):
             new_col = [ ]
-            for row in range(height):
+            for row in range(m.height):
                 new_col.append(nowhere)
             self.grid.append(new_col)
 
@@ -271,45 +270,64 @@ class MapMemory:
         view = []
         for x in range(x0, 0):
             view.append(nowhere_col)
-        for x in range(max(x0, 0), min(x1+1, self.width)):
+        for x in range(max(x0, 0), min(x1+1, self.m.width)):
             if y0 < 0:
                 col = [ nowhere, ] * -y0
             else:
                 col = [ ]
-            col.extend(self.grid[x][max(y0, 0):min(y1+1, self.height)])
-            if y1 >= self.height:
-                col.extend([ nowhere, ] * (y1 - self.height + 1))
+            col.extend(self.grid[x][max(y0, 0):min(y1+1, self.m.height)])
+            if y1 >= self.m.height:
+                col.extend([ nowhere, ] * (y1 - self.m.height + 1))
             view.append(col)
-        for x in range(self.width-1, x1):
+        for x in range(self.m.width-1, x1):
             view.append(nowhere_col)
         return view
 
-    def update_memory(self, view, x_add, y_add, x0, y0, x1, y1):
-        # XXX: need to remove this
-        self.add_view(x_add, y_add, view)
-        x0_view = x_add
-        y0_view = y_add
-        x1_view = x0_view + len(view) - 1
-        y1_view = y0_view + len(view[0]) - 1
-        # get our old view
-        new_view = self.read_memory(x0, y0, x1, y1)
-        # now go through and every place that we cannot currently see
-        # change the color to a dark gray
-        nowhere = (' ', DARK_COLOR)
-        x_ofs = 0
-        for x in range(x0, x1+1):
-            y_ofs = 0
-            for y in range(y0, y1+1):
-                if (x >= x0_view) and (x <= x1_view) and \
-                   (y >= y0_view) and (y <= y1_view):
-                    square = view[x-x0_view][y-y0_view]
-                    if square == nowhere:
-                        new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
-                                                  MEMORY_COLOR)
-                else:
-                    new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
-                                              MEMORY_COLOR)
-                y_ofs = y_ofs + 1
-            x_ofs = x_ofs + 1
-        return new_view
+#    def update_memory(self, view, x_add, y_add, x0, y0, x1, y1):
+#        # XXX: need to remove this
+#        self.add_view(x_add, y_add, view)
+#        x0_view = x_add
+#        y0_view = y_add
+#        x1_view = x0_view + len(view) - 1
+#        y1_view = y0_view + len(view[0]) - 1
+#        # get our old view
+#        new_view = self.read_memory(x0, y0, x1, y1)
+#        # now go through and every place that we cannot currently see
+#        # change the color to a dark gray
+#        nowhere = (' ', DARK_COLOR)
+#        x_ofs = 0
+#        for x in range(x0, x1+1):
+#            y_ofs = 0
+#            for y in range(y0, y1+1):
+#                if (x >= x0_view) and (x <= x1_view) and \
+#                   (y >= y0_view) and (y <= y1_view):
+#                    square = view[x-x0_view][y-y0_view]
+#                    if square == nowhere:
+#                        new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
+#                                                  MEMORY_COLOR)
+#                else:
+#                    new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
+#                                              MEMORY_COLOR)
+#                y_ofs = y_ofs + 1
+#            x_ofs = x_ofs + 1
+#        return new_view
 
+    def look_at(self, x0, y0, x1, y1, r):
+        wid = x1 - x0 + 1
+        assert(wid & 1)
+        hig = y1 - y0 + 1
+        assert(wid & 1)
+        x_center = (x1 + x0) // 2
+        y_center = (y1 + y0) // 2
+        view = self.m.view(x_center, y_center, wid, hig, r)
+        nowhere = (' ', DARK_COLOR)
+        for x in range(max(x0, 0), min(x1+1, self.m.width)):
+            for y in range(max(y0, 0), min(y1+1, self.m.height)):
+                square = view[x-x0][y-y0]
+                if square != nowhere:
+                    # if the square is visible, copy to our memory
+                    self.grid[x][y] = square
+                else:
+                    # if the square is not visible, update the view from memory
+                    view[x-x0][y-y0] = (self.grid[x][y][0], MEMORY_COLOR)
+        return view

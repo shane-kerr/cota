@@ -78,6 +78,7 @@ def wait_for_minimum_size(ui, min_width, min_height):
         else:
             pass        # no message for really dinky screen
         input_event = ui.get_input()
+        ui.clear()
 
 # curses testing stuff
 

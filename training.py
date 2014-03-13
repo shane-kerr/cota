@@ -52,24 +52,23 @@ def school(ui, skill_list, pc):
     stuff = items.ItemCollection()
     m = grid.Map(80, 24, stuff)
     apply_school_map(m, stuff)
-    mm = grid.MapMemory(m.width, m.height)
-#    m.enclose()
+    mm = grid.MapMemory(m)
     player = stuff.create_item('@', PLAYER_COLOR, True)
     player_x = 2
     player_y = 2
     m.drop_item_at(player, player_x, player_y)
     (width, height) = ui.get_screen_size()
     while True:
-#        view = m.view(player_x, player_y, 17, 17, 8)
-#        mm.add_view(player_x - 8, player_y - 8, view)
-#        mm_view = mm.read_memory(player_x-16, player_y-8, 
-#                                 player_x+16, player_y+8)
-        view = mm.update_memory(m.view(player_x, player_y, 17, 17, 8),
-                                player_x-8, player_y-8,
-                                player_x-16, player_y-8,
-                                player_x+16, player_y+8)
-
+        textui.wait_for_minimum_size(ui, 80, 24)
+        (width, height) = ui.get_screen_size()
+        h_size = (width - 40) | 1
+        h_half = h_size // 2
+        v_size = ((height * 2) // 3) | 1
+        v_half = v_size // 2
+        view = mm.look_at(player_x - h_half, player_y - v_half,
+                          player_x + h_half, player_y + v_half, 8)
         display.main_display(ui, width, height, view, pc, [])
+
         event = ui.get_input()
         new_x = player_x
         new_y = player_y
@@ -96,6 +95,8 @@ def school(ui, skill_list, pc):
                 new_y = player_y + 1
             elif event.key == 27:
                 return
+        elif event.event_type == 'resize':
+            ui.clear()
         if m.can_move_onto(new_x, new_y):
             m.pickup_item(player)
             player_x, player_y = new_x, new_y
