@@ -96,11 +96,14 @@ class textui_curses:
         self.scr.timeout(timeout_msec)
         ch = self.scr.getch()
         if ch == curses.KEY_MOUSE:
-            (dev_id, x, y, z, bstate) = curses.getmouse()
-            events = { }
-            if bstate & curses.BUTTON1_CLICKED:
-                events["left_click"] = 1
-            return textui_mouse_event(x, y, events)
+            try:
+                (dev_id, x, y, z, bstate) = curses.getmouse()
+                events = { }
+                if bstate & curses.BUTTON1_CLICKED:
+                    events["left_click"] = 1
+                return textui_mouse_event(x, y, events)
+            except curses.error:
+                return None
         elif ch == curses.KEY_RESIZE:
             return textui_resize_event()
         elif ch == -1:
