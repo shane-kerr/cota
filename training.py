@@ -49,7 +49,7 @@ def apply_school_map(m, stuff):
 
 def school(ui, skill_list, pc):
     ui.clear()
-    stuff = items.ItemCollection()
+    stuff = items.ItemCollection(items.ItemDefinitions(skill_list))
     m = grid.Map(80, 24, stuff)
     apply_school_map(m, stuff)
     mm = grid.MapMemory(m)
@@ -57,6 +57,8 @@ def school(ui, skill_list, pc):
     player_x = 2
     player_y = 2
     m.drop_item_at(player, player_x, player_y)
+    club = stuff.create_item_from_def("club")
+    m.drop_item_at(club, 5, 8)
     (width, height) = ui.get_screen_size()
     while True:
         textui.wait_for_minimum_size(ui, 80, 24)
