@@ -54,9 +54,13 @@ def school(ui, skill_list, pc):
     m = grid.Map(80, 24, stuff)
     apply_school_map(m, stuff)
     mm = grid.MapMemory(m)
+
     player = stuff.create_item('@', PLAYER_COLOR, True)
     player_x = 2
     player_y = 2
+
+    things_here = m.items_at(player_x, player_y)
+
     m.drop_item_at(player, player_x, player_y)
     club = stuff.create_item_from_def("club")
     m.drop_item_at(club, 5, 8)
@@ -71,6 +75,13 @@ def school(ui, skill_list, pc):
         view = mm.look_at(player_x - h_half, player_y - v_half,
                           player_x + h_half, player_y + v_half, 8)
         display.main_display(ui, width, height, view, pc, [])
+
+        if len(things_here) > 1:
+            disabled = None
+        else:
+            disabled = ("g")
+        display.show_keys_help(ui, width, height,
+                  ("Esc", "Up", "Down", "Left", "Right", "g", "i"), disabled)
 
         event = ui.get_input()
         if event is None: continue
@@ -100,17 +111,12 @@ def school(ui, skill_list, pc):
                 new_y = player_y + 1
             elif event.key == 27:
                 return
-#            else:
-#                ui.write(0, height-1, "key: 0x%X (%d)" % (event.key, event.key))
         elif event.event_type == 'resize':
             ui.clear()
         if m.can_move_onto(new_x, new_y):
             m.pickup_item(player)
             player_x, player_y = new_x, new_y
-            things = m.items_at(player_x, player_y)
-            if things:
-                for n in range(len(things)):
-                    ui.write(1, height-2-n, "Item here: %s" % things[n].name)
+            things_here = m.items_at(player_x, player_y)
             m.drop_item_at(player, player_x, player_y)
         
 

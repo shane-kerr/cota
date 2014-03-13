@@ -1,19 +1,28 @@
 import textui
 
-def show_keys_help(ui, width, height, keys):
+def show_keys_help(ui, width, height, keys, disabled=None):
     text_color = ui.color_attr(textui.BLACK, textui.WHITE)
     key_color = ui.color_attr(textui.WHITE, textui.WHITE, textui.BOLD)
+    disabled_color = ui.color_attr(textui.BLACK, textui.WHITE, textui.BOLD)
     total_len = len("Keys=") + len('/'.join(keys))
     help_col = (width-total_len) // 2
     ui.write(help_col, height-1, "Keys=", text_color)
     help_col = help_col + len("Keys=")
     while len(keys) > 1:
-        ui.write(help_col, height-1, keys[0], key_color)
+        if disabled and (keys[0] in disabled):
+            color = disabled_color
+        else:
+            color = key_color
+        ui.write(help_col, height-1, keys[0], color)
         help_col = help_col + len(keys[0])
         ui.write(help_col, height-1, '/', text_color)
         help_col = help_col + 1
         keys = keys[1:]
-    ui.write(help_col, height-1, keys[0], key_color)
+    if disabled and (keys[0] in disabled):
+        color = disabled_color
+    else:
+        color = key_color
+    ui.write(help_col, height-1, keys[0], color)
 
 def main_display(ui, width, height, view, pc, history):
     # show the map
@@ -43,10 +52,6 @@ def main_display(ui, width, height, view, pc, history):
     ui.write(width-26, 7, "HP:     %2d" % pc.HP)
     ui.write(width-26, 8, "MP:     %2d" % pc.MP)
     ui.write(width-26, 9, "SP:     %2d" % pc.Sanity)
-
-    # show our key help
-    show_keys_help(ui, width, height, 
-                   ("Esc", "Up", "Down", "Left", "Right", "i"))
 
     ui.cursor_position(17, 9)
 #    ui.cursor_visible(True)
