@@ -1,6 +1,6 @@
 import weakref
 import dice
-#import re
+import colors
 
 class ItemCollection:
     def __init__(self, next_uniq_id=500000):
@@ -85,6 +85,7 @@ class ItemDefinitions:
             attrs, desc = item_def_info.split("---\n")
             for attr in attrs.strip().split("\n"):
                 attr_name, attr_val = attr.split(":", 1)
+                attr_name = attr_name.strip().lower()
                 if attr_name == "name":
                     item_attrs["name"] = attr_val.strip()
                 elif attr_name == "weight":
@@ -116,6 +117,15 @@ class ItemDefinitions:
                         equip = equip.strip()
                         assert(equip in ("1h weapon", "2h weapon", "hands"))
                         item_attrs["equip"].append(equip)
+                elif attr_name == "symbol":
+                    attr_val = attr_val.strip()
+                    assert(len(attr_val) == 1)
+                    item_attrs["symbol"] = attr_val
+                elif attr_name == "color":
+                    item_attrs["color"] = colors.parse_color(attr_val)
+                else:
+                    # unknown item attribute... probably a misspelling
+                    assert(False)
             item_attrs["descr"] = ' '.join(desc.split("\n"))
 
         self.defs[item_attrs["name"]] = item_attrs
