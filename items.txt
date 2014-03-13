@@ -1,4 +1,6 @@
 name: Dolabra (Spiked Axe)
+symbol: |
+color: dark gray
 weight: 6 libra
 equip: 1h weapon
 damage: 1D6+1 cut, 1D6 impale
@@ -13,6 +15,8 @@ animals and as an entrenching tool (mattock) used in Roman infantry
 tactics.
 
 name: Cestus (Weighted Gloves)
+symbol: [
+color: brown
 weight: 1 libra
 equip: hands, 1h weapon
 damage: 1D6 crush
@@ -25,6 +29,8 @@ leather strips and sometimes filled with iron plates or fitted with
 blades or spikes, and used as weapons.
 
 name: Club
+symbol: |
+color: brown
 weight: 4 libra
 equip: 1h weapon
 damage: 1D6 crush
@@ -36,6 +42,8 @@ short staff, or stick, usually made of wood, and wielded as a weapon
 since prehistoric times.
 
 name: Pilum (Javelin)
+symbol: |
+color: brown
 weight: 9 libra
 equip: 1h weapon
 damage: 1D8 impale
@@ -49,6 +57,8 @@ with pyramidal head. The shank was joined to the wooded shaft by
 either a socket or a flat tang.
 
 name: Pugio (Dagger)
+symbol: |
+color: light gray
 weight: 0.5 libra
 equip: 1h weapon
 damage: 1D6 impale, 1D4 cut
@@ -63,6 +73,8 @@ and suicide; for example, the conspirators who stabbed Julius Caesar
 used pugiones.
 
 name: Hasta (Spear)
+symbol: |
+color: brown
 weight: 5.5 libra
 equip: 2h weapon
 damage: 1D10 impale
@@ -76,6 +88,8 @@ pilum, verutum or lancea, the hasta was not thrown, but used for
 thrusting.
 
 name: Gladius (Short Sword)
+symbol: |
+color: light gray
 weight: 3 libra
 equip: 1h weapon
 damage: 1D6+1 impale, 1D6 cut
@@ -88,6 +102,8 @@ All types of gladius appear to have also been suitable for cutting and
 chopping motions as well as for thrusting.
 
 name: Khopesh (Sickle Sword)
+symbol: )
+color: yellow
 weight: 4 libra
 equip: 1h weapon
 damage: 1D8 cut
@@ -101,6 +117,8 @@ opponent's shield or disarming them. These weapons changed from bronze
 to iron in the late period.
 
 name: Spatha (Long Sword)
+symbol: |
+color: light gray
 weight: 4 libra
 equip: 1h weapon
 damage: 1D8 cut, 1D6 impale
@@ -111,6 +129,8 @@ The spatha was a type of straight and long sword, measuring between
 0.75 m and 1 m.
 
 name: Fuscina (Trident)
+symbol: 3
+color: yellow
 weight: 7 libra
 equip: 1h weapon
 damage: 1D10+1 impale
@@ -122,10 +142,12 @@ historically as a polearm. The trident is the weapon of Neptune, the
 god of the sea.
 
 name: Iaculum (Casting Net)
+symbol: }
+color: brown
 weight: 7 libra
 equip: 1h weapon
 damage: entangle
-Skill: Net
+skill: Net
 www: http://www.tribunesandtriumphs.org/gladiators/gladiator-weapons.htm
 www: http://en.wikipedia.org/wiki/Retiarius
 ---
