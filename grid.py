@@ -110,7 +110,8 @@ class Map:
                 if (x1 - x0) >= (y1 - y0):
                     y = y0
                     # core loop
-                    for x in range(x0, x1):
+#                    for x in range(x0, x1):
+                    for x in range(x0+1, x1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -121,7 +122,8 @@ class Map:
                 else:
                     x = x0
                     # core loop
-                    for y in range(y0, y1):
+#                    for y in range(y0, y1):
+                    for y in range(y0+1, y1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
@@ -134,7 +136,8 @@ class Map:
                 if (x1 - x0) >= (y0 - y1):
                     y = y0
                     # core loop
-                    for x in range(x0, x1):
+#                    for x in range(x0, x1):
+                    for x in range(x0+1, x1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -145,7 +148,8 @@ class Map:
                 else:
                     x = x0
                     # core loop
-                    for y in range(y0, y1, -1):
+#                    for y in range(y0, y1, -1):
+                    for y in range(y0-1, y1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
@@ -160,7 +164,8 @@ class Map:
                 if (x0 - x1) >= (y1 - y0):
                     y = y0
                     # core loop
-                    for x in range(x0, x1, -1):
+#                    for x in range(x0, x1, -1):
+                    for x in range(x0-1, x1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -171,7 +176,8 @@ class Map:
                 else:
                     x = x0
                     # core loop
-                    for y in range(y0, y1):
+#                    for y in range(y0, y1):
+                    for y in range(y0+1, y1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
@@ -184,7 +190,8 @@ class Map:
                 if (x0 - x1) >= (y0 - y1):
                     y = y0
                     # core loop
-                    for x in range(x0, x1, -1):
+#                    for x in range(x0, x1, -1):
+                    for x in range(x0-1, x1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -195,7 +202,8 @@ class Map:
                 else:
                     x = x0
                     # core loop
-                    for y in range(y0, y1, -1):
+#                    for y in range(y0, y1, -1):
+                    for y in range(y0-1, y1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
