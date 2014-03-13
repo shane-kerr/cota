@@ -70,6 +70,8 @@ def school(ui, skill_list, pc):
         display.main_display(ui, width, height, view, pc, [])
 
         event = ui.get_input()
+        if event is None: continue
+
         new_x = player_x
         new_y = player_y
         if event.event_type == 'keyboard':
@@ -95,6 +97,8 @@ def school(ui, skill_list, pc):
                 new_y = player_y + 1
             elif event.key == 27:
                 return
+#            else:
+#                ui.write(0, height-1, "key: 0x%X (%d)" % (event.key, event.key))
         elif event.event_type == 'resize':
             ui.clear()
         if m.can_move_onto(new_x, new_y):
