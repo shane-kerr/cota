@@ -3,6 +3,7 @@ import keymap
 import display
 import items
 import grid
+import history
 
 PLAYER_COLOR=(textui.YELLOW, textui.BLACK, textui.BOLD)
 
@@ -64,7 +65,10 @@ def school(ui, skill_list, pc):
     m.drop_item_at(player, player_x, player_y)
     club = stuff.create_item_from_def("club")
     m.drop_item_at(club, 5, 8)
+
     (width, height) = ui.get_screen_size()
+    player_history = history.history(width)
+
     while True:
         textui.wait_for_minimum_size(ui, 80, 24)
         (width, height) = ui.get_screen_size()
@@ -74,7 +78,7 @@ def school(ui, skill_list, pc):
         v_half = v_size // 2
         view = mm.look_at(player_x - h_half, player_y - v_half,
                           player_x + h_half, player_y + v_half, 8)
-        display.main_display(ui, width, height, view, pc, [])
+        display.main_display(ui, width, height, view, pc, player_history)
 
         if len(things_here) > 1:
             disabled = None
@@ -117,6 +121,8 @@ def school(ui, skill_list, pc):
             m.pickup_item(player)
             player_x, player_y = new_x, new_y
             things_here = m.items_at(player_x, player_y)
+            for thing in things_here:
+                player_history.add('You see a %s here' % thing.name.lower())
             m.drop_item_at(player, player_x, player_y)
         
 

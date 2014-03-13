@@ -1,4 +1,5 @@
 import textui
+import history
 
 def show_keys_help(ui, width, height, keys, disabled=None):
     text_color = ui.color_attr(textui.BLACK, textui.WHITE)
@@ -31,7 +32,6 @@ def main_display(ui, width, height, view, pc, history):
             (c, a) = view[x][y]
             ui.write(x+1, y+1, c, ui.color_attr(a[0], a[1], a[2]))
 
-
     # show the basic stats
     ui.write(width-36, 2, "STR: %2d" % pc.STR)
     ui.write(width-36, 3, "CON: %2d" % pc.CON)
@@ -53,5 +53,14 @@ def main_display(ui, width, height, view, pc, history):
     ui.write(width-26, 8, "MP:     %2d" % pc.MP)
     ui.write(width-26, 9, "SP:     %2d" % pc.Sanity)
 
+    # write our history log
+    history.set_width(width-2)
+    history_row = height-2
+    for line in history:
+        if history_row <= len(view[0]): break
+        ui.write(1, history_row, line)
+        history_row = history_row - 1
+
+    # put the cursor over our '@' sign, just in case...
     ui.cursor_position(17, 9)
 #    ui.cursor_visible(True)
