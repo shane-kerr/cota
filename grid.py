@@ -8,13 +8,14 @@ DARK_COLOR = (textui.BLACK, textui.BLACK, textui.NORMAL)
 MEMORY_COLOR = (textui.BLACK, textui.BLACK, textui.BOLD)
 
 class Square:
-    def __init__(self):
+    def __init__(self, ch='.', attr=FLOOR_COLOR):
         self.stuff = [ ]
+        self.default = (ch, attr)
     def view(self):
         if self.stuff:
             return self.stuff[-1].view()
         else:
-            return ('.', FLOOR_COLOR)
+            return self.default
     def drop(self, thing):
         assert(isinstance(thing, Item))
         self.stuff.append(thing)
@@ -110,8 +111,7 @@ class Map:
                 if (x1 - x0) >= (y1 - y0):
                     y = y0
                     # core loop
-#                    for x in range(x0, x1):
-                    for x in range(x0+1, x1):
+                    for x in range(x0, x1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -122,8 +122,7 @@ class Map:
                 else:
                     x = x0
                     # core loop
-#                    for y in range(y0, y1):
-                    for y in range(y0+1, y1):
+                    for y in range(y0, y1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
@@ -136,8 +135,7 @@ class Map:
                 if (x1 - x0) >= (y0 - y1):
                     y = y0
                     # core loop
-#                    for x in range(x0, x1):
-                    for x in range(x0+1, x1):
+                    for x in range(x0, x1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -148,8 +146,7 @@ class Map:
                 else:
                     x = x0
                     # core loop
-#                    for y in range(y0, y1, -1):
-                    for y in range(y0-1, y1, -1):
+                    for y in range(y0, y1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
@@ -164,8 +161,7 @@ class Map:
                 if (x0 - x1) >= (y1 - y0):
                     y = y0
                     # core loop
-#                    for x in range(x0, x1, -1):
-                    for x in range(x0-1, x1, -1):
+                    for x in range(x0, x1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -176,8 +172,7 @@ class Map:
                 else:
                     x = x0
                     # core loop
-#                    for y in range(y0, y1):
-                    for y in range(y0+1, y1):
+                    for y in range(y0, y1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
@@ -190,8 +185,7 @@ class Map:
                 if (x0 - x1) >= (y0 - y1):
                     y = y0
                     # core loop
-#                    for x in range(x0, x1, -1):
-                    for x in range(x0-1, x1, -1):
+                    for x in range(x0, x1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltay
@@ -202,8 +196,7 @@ class Map:
                 else:
                     x = x0
                     # core loop
-#                    for y in range(y0, y1, -1):
-                    for y in range(y0-1, y1, -1):
+                    for y in range(y0, y1, -1):
                         if not self.can_see_through(x, y):
                             return False
                         error = error + deltax
@@ -216,14 +209,17 @@ class Map:
         return self.is_los(x0, y0, x1, y1) or self.is_los(x1, y1, x0, y0)
 
     def view(self, center_x, center_y, view_width, view_height, r):
+        # remove any blockage at the center
+        original_center = self.grid[center_x][center_y]
+        original_look = original_center.view()
+        self.grid[center_x][center_y] = Square(original_look[0], 
+                                               original_look[1])
+
         nowhere = (' ', DARK_COLOR)
         assert((view_height & 1) == 1)
         assert((view_width & 1) == 1)
         half_wide = view_width // 2
         half_high = view_height // 2
-# these asserts mean that we can't show all the visible area
-#        assert((half_high <= r)
-#        assert((half_wide <= r)
         r_squared = abs(r) * (abs(r) + 1)
         v = [ ]
         for x in range(view_width):
@@ -248,6 +244,9 @@ class Map:
                         else:
                             view_col.append(square_view)
             v.append(view_col)
+
+        # return the original center
+        self.grid[center_x][center_y] = original_center
         return v
 
 class MapMemory:
@@ -290,35 +289,6 @@ class MapMemory:
         for x in range(self.m.width-1, x1):
             view.append(nowhere_col)
         return view
-
-#    def update_memory(self, view, x_add, y_add, x0, y0, x1, y1):
-#        # XXX: need to remove this
-#        self.add_view(x_add, y_add, view)
-#        x0_view = x_add
-#        y0_view = y_add
-#        x1_view = x0_view + len(view) - 1
-#        y1_view = y0_view + len(view[0]) - 1
-#        # get our old view
-#        new_view = self.read_memory(x0, y0, x1, y1)
-#        # now go through and every place that we cannot currently see
-#        # change the color to a dark gray
-#        nowhere = (' ', DARK_COLOR)
-#        x_ofs = 0
-#        for x in range(x0, x1+1):
-#            y_ofs = 0
-#            for y in range(y0, y1+1):
-#                if (x >= x0_view) and (x <= x1_view) and \
-#                   (y >= y0_view) and (y <= y1_view):
-#                    square = view[x-x0_view][y-y0_view]
-#                    if square == nowhere:
-#                        new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
-#                                                  MEMORY_COLOR)
-#                else:
-#                    new_view[x_ofs][y_ofs] = (new_view[x_ofs][y_ofs][0], 
-#                                              MEMORY_COLOR)
-#                y_ofs = y_ofs + 1
-#            x_ofs = x_ofs + 1
-#        return new_view
 
     def look_at(self, x0, y0, x1, y1, r):
         wid = x1 - x0 + 1
