@@ -153,3 +153,38 @@ www: http://en.wikipedia.org/wiki/Retiarius
 ---
 The iaculum was a weighted casting net - the weapon of a retiarius.
 
+name: Small Shield
+symbol: (
+color: red
+weight: 11 libra
+equip: shield
+skill: Shield - Small
+www: https://en.wikipedia.org/wiki/Shield
+---
+A shield is broad piece of defensive armor, carried on the arm, in
+general use in war, for the protection of the body.
+
+name: Medium Shield
+symbol: (
+color: red
+weight: 21 libra
+equip: shield
+skill: Shield - Medium
+www: https://en.wikipedia.org/wiki/Shield
+---
+A shield is broad piece of defensive armor, carried on the arm, in
+general use in war, for the protection of the body.
+
+name: Scutum (Large Shield)
+symbol: [
+color: red
+weight: 31 libra
+equip: shield
+skill: Shield - Large
+www: https://en.wikipedia.org/wiki/Scutum_%28shield%29
+---
+The scutum is a large rectangle curved shield made from three sheets
+of wood glued together and covered with canvas and leather, usually
+with a spindle shaped boss along the vertical length of the shield. It
+is well made and extremely sturdy.
+

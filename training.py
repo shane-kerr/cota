@@ -287,6 +287,8 @@ def school(ui, skill_list, pc):
     m.drop_item_at(hasta, 4, 4)
     sword = stuff.create_item_from_def("short sword")
     m.drop_item_at(sword, 6, 2)
+    scutum = stuff.create_item_from_def("scutum")
+    m.drop_item_at(scutum, 5, 1)
 
     (width, height) = ui.get_screen_size()
     player_history = history.history(width)
@@ -322,7 +324,8 @@ def school(ui, skill_list, pc):
         if not m.can_move_onto(player_x+1, player_y):
             disabled.append("Right")
         display.show_keys_help(ui, width, height,
-                  ("Esc", "Up", "Down", "Left", "Right", "g", "i"), disabled)
+                  ("Esc", "Up", "Down", "Left", "Right", "g", "i"),
+                  disabled)
 
         event = ui.get_input()
         if event is None: continue

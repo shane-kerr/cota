@@ -165,5 +165,10 @@ class PlayerCharacter:
         elif item.equip == "2h weapon":
             self.equip["right hand"] = item
             self.equip["left hand"] = item
+        elif item.equip == "shield":
+            # unequip 2-handed weapons if used
+            if self.equip["left hand"] == self.equip["right hand"]:
+                self.equip["right hand"] = None
+            self.equip["left hand"] = item
         else:
             assert(False)
