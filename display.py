@@ -58,7 +58,7 @@ def main_display(ui, width, height, view, pc, history):
     history_row = height-2
     for line in history:
         if history_row <= len(view[0]): break
-        ui.write(1, history_row, line)
+        ui.write(1, history_row, line.ljust(width-2))
         history_row = history_row - 1
 
     # put the cursor over our '@' sign, just in case...
