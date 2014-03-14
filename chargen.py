@@ -228,11 +228,24 @@ def do_occupation_skills(ui, bg, pc, skill_list):
             ui.write(2, 13, "Unassigned Skills:  %3d" % unassigned_skill_cnt)
             ui.write(2, 14, "Free Skill Points:  %3d" % free_skill_points)
             show_char_stats(ui, pc)
-            display.show_keys_help(ui, width, height, 
-                           ("Esc", "Up", "Down", "Left", "Right", "Enter"))
             step_txt = "[Step 2 of 3]"
             ui.write(width - len(step_txt) - 1, height - 1, step_txt)
             refresh = False
+        disabled = []
+        if cur == 0:
+            disabled.append("Up")
+        elif cur == len(skill_list.names) - 1:
+            disabled.append("Down")
+        name = skill_list.names[cur]
+        if pc.skill_levels[name] == pc.skill_defaults[name]:
+            disabled.append("Left")
+        if free_skill_points <= 0:
+            disabled.append("Right")
+        elif (name not in pc.skills_added) and (unassigned_skill_cnt <= 0):
+            disabled.append("Right")
+        display.show_keys_help(ui, width, height, 
+                           ("Esc", "Up", "Down", "Left", "Right", "Enter"), 
+                           disabled)
         show_skill_list(ui, width, height, ofs, cur, skill_list, pc, True)
         input_event = ui.get_input()
         if input_event.event_type == "keyboard":
@@ -247,7 +260,6 @@ def do_occupation_skills(ui, bg, pc, skill_list):
                 if skill_list.names[cur] == '---':
                     cur = cur - 1
             elif input_event.key in keys_l:
-                name = skill_list.names[cur]
                 if not pc.skill_levels[name] == pc.skill_defaults[name]:
                     new_level = pc.skill_levels[name]
                     new_level = new_level - (new_level % 5)
@@ -266,7 +278,6 @@ def do_occupation_skills(ui, bg, pc, skill_list):
                     ui.write(2, 14, "Free Skill Points:  %3d" % 
                                    free_skill_points)
             elif input_event.key in keys_r:
-                name = skill_list.names[cur]
                 if (name not in pc.skills_added) and \
                    (unassigned_skill_cnt > 0) and (free_skill_points > 0):
                     pc.skills_added[name] = True
@@ -335,11 +346,22 @@ def do_other_skills(ui, bg, pc, skill_list):
             ui.write(2, 2, "Background: %s" % bg.name)
             ui.write(2, 14, "Free Skill Points:  %3d" % free_skill_points)
             show_char_stats(ui, pc)
-            display.show_keys_help(ui, width, height, 
-                           ("Esc", "Up", "Down", "Left", "Right", "Enter"))
             step_txt = "[Step 3 of 3]"
             ui.write(width - len(step_txt) - 1, height - 1, step_txt)
             refresh = False
+        disabled = []
+        if cur == 0:
+            disabled.append("Up")
+        elif cur == len(skill_list.names) - 1:
+            disabled.append("Down")
+        name = skill_list.names[cur]
+        if pc.skill_levels[name] == pc.skill_defaults[name]:
+            disabled.append("Left")
+        if free_skill_points <= 0:
+            disabled.append("Right")
+        display.show_keys_help(ui, width, height, 
+                           ("Esc", "Up", "Down", "Left", "Right", "Enter"), 
+                           disabled)
         show_skill_list(ui, width, height, ofs, cur, skill_list, pc, False)
         input_event = ui.get_input()
         if input_event.event_type == "keyboard":
@@ -354,7 +376,6 @@ def do_other_skills(ui, bg, pc, skill_list):
                 if skill_list.names[cur] == '---':
                     cur = cur - 1
             elif input_event.key in keys_l:
-                name = skill_list.names[cur]
                 if not pc.skill_levels[name] == pc.skill_defaults[name]:
                     new_level = pc.skill_levels[name]
                     new_level = new_level - (new_level % 5)
@@ -367,7 +388,6 @@ def do_other_skills(ui, bg, pc, skill_list):
                     ui.write(2, 14, "Free Skill Points:  %3d" % 
                                    free_skill_points)
             elif input_event.key in keys_r:
-                name = skill_list.names[cur]
                 if free_skill_points > 0:
                     increase = min(free_skill_points, 5)
                     new_level = pc.skill_levels[name] + increase
