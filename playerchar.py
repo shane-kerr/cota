@@ -117,11 +117,17 @@ class PlayerCharacter:
         return None
 
     def get_item(self, item, history):
-        # check weight, adjust weight
         slot = self._find_slot(item)
         if slot is None:
+            history.add("No slots available to pick up the %s" % 
+                        item.name.lower())
+            return False
+        if self.weight_carried + item.weight > self.weight_limit:
+            history.add("You are already carrying too much weight to pick up the %s" %
+                        item.name.lower())
             return False
         self.inventory[slot] = item
+        self.weight_carried = self.weight_carried + item.weight
         history.add("You picked up the %s" % item.name.lower() + 
                     " (you can drop or equip from inventory)")
         return True
@@ -143,6 +149,7 @@ class PlayerCharacter:
         # XXX: insure not equipped
         item = self.inventory[slot]
         self.inventory[slot] = None
+        self.weight_carried = self.weight_carried - item.weight
         history.add("You dropped the %s" % item.name.lower())
         return item
 
