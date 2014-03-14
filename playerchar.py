@@ -89,18 +89,18 @@ class PlayerCharacter:
     # it used available and use that.
     # Next, we try to get the next slot (so if we picked "a" last time, we 
     # go for "b")
-    def _find_slot(self, item_uniq_id):
+    def _find_slot(self, item):
         # clear items that have disappeared from the slot stability cache
         items_destroyed = [ ]
-        for (uniq_id, slot_ref) in self.slot_stability_cache.items():
-            slot = slot_ref()
-            if slot is None:
+        for (uniq_id, slot_item) in self.slot_stability_cache.items():
+            [slot, item_ref] = slot_item
+            if item_ref() is None:
                 items_destroyed.append(uniq_id)
         for uniq_id in items_destroyed:
             del self.slot_stability_cache[uniq_id]
         # now see if our item is in our slot cache, and if that slot is free
-        if item_uniq_id in self.slot_stability_cache:
-            slot = self.slot_stability_cache[item_uniq_id]()
+        if item.uniq_id in self.slot_stability_cache:
+            [slot, item_ref] = self.slot_stability_cache[item.uniq_id]
             if self.inventory[slot] is None:
                 return slot
         # if not, we have to find a free slot
@@ -109,6 +109,7 @@ class PlayerCharacter:
             slot = self.avail_slots[next_slot_ofs]
             if self.inventory[slot] is None:
                 self.last_slot_ofs = next_slot_ofs
+                self.slot_stability_cache[item.uniq_id] = [slot, weakref.ref(item)]
                 return slot
             next_slot_ofs = (next_slot_ofs + 1) % len(self.avail_slots)
         # no free slots... bummer
@@ -116,7 +117,7 @@ class PlayerCharacter:
 
     def get_item(self, item, history):
         # check weight, adjust weight
-        slot = self._find_slot(item.uniq_id)
+        slot = self._find_slot(item)
         if slot is None:
             return False
         self.inventory[slot] = item
