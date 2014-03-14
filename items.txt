@@ -18,7 +18,7 @@ name: Cestus (Weighted Gloves)
 symbol: [
 color: brown
 weight: 1 libra
-equip: hands, 1h weapon
+equip: 1h weapon
 damage: 1D6 crush
 skill: Punch
 www: https://en.wikipedia.org/wiki/Cestus

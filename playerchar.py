@@ -146,10 +146,24 @@ class PlayerCharacter:
         return inv
 
     def drop_item(self, slot, history):
-        # XXX: insure not equipped
         item = self.inventory[slot]
         self.inventory[slot] = None
         self.weight_carried = self.weight_carried - item.weight
+        for (equip_place, equip_item) in self.equip.items():
+            if item is equip_item:
+                self.equip[equip_place] = None
         history.add("You dropped the %s" % item.name.lower())
         return item
 
+    def equip_item(self, slot):
+        item = self.inventory[slot]
+        if item.equip == "1h weapon":
+            # unequip 2-handed weapons if used
+            if self.equip["left hand"] == self.equip["right hand"]:
+                self.equip["left hand"] = None
+            self.equip["right hand"] = item
+        elif item.equip == "2h weapon":
+            self.equip["right hand"] = item
+            self.equip["left hand"] = item
+        else:
+            assert(False)

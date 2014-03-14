@@ -197,7 +197,7 @@ def inventory(ui, pc, inv_ofs):
                 if action == "drop":
                     return [ inv_ofs, "drop", chr(event.key) ]
                 elif action == "equip":
-                    return [ inv_ofs, "equip", chr(event.key) ]
+                    pc.equip_item(chr(event.key))
         elif event.event_type == "resize":
             ui.clear()
             (width, height) = ui.get_screen_size()
