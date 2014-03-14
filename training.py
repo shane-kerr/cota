@@ -7,66 +7,116 @@ import history
 
 PLAYER_COLOR=(textui.YELLOW, textui.BLACK, textui.BOLD)
 
+def get_slot_ranges(inv):
+    """get the slot ranges, so if we have items "a", "b", and "d", 
+    we get ("a-b", "d")
+    """
+    if not inv:
+        return ( )
+    ranges = [ ]
+    range_start = inv[0][0]
+    range_end = range_start
+    inv = inv[1:]
+    while inv:
+        slot = inv[0][0]
+        if ord(range_start)+1 == ord(slot):
+            range_end = slot
+        else:
+            if range_start == range_end:
+                ranges.append(range_start)
+            else:
+                ranges.append(range_start + "-" + range_end)
+        inv = inv[1:]
+    if range_start == range_end:
+        ranges.append(range_start)
+    else:
+        ranges.append(range_start + "-" + range_end)
+    return tuple(ranges)
+
 def inventory(ui, pc):
     # TODO: truncate names in case we get very long item names
-    ui.clear()
-    (width, height) = ui.get_screen_size()
-
     inv_ofs = 0
 
-    # show our equipment
-    equip_col = (width - 80) // 2
-    ui.write(equip_col, 0, "+" + ("-" * 78) + "+")
-    label = "=[ Equipment ]="
-    ui.write((width - len(label)) // 2, 0, label)
-    ui.write(equip_col, 1, "|       head: %s |" % pc.equip_label("head").ljust(64))
-    torso = pc.equip_label("torso")
-    cloak = pc.equip_label("cloak")
-    if torso == "nothing":
-        body = cloak
-    elif cloak == "nothing":
-        body = torso
-    else:
-        body = torso + ", " + cloak
-    ui.write(equip_col, 2, "|      torso: %s |" % body.ljust(64))
-    ui.write(equip_col, 3, "+" + ("-" * 38) + "+" + ("-" * 39) + "+")
-    ui.write(equip_col, 4, "|   left arm: %s | %s :right arm  |" % (
-        pc.equip_label("left arm").ljust(24),
-        pc.equip_label("right arm").rjust(25)))
-    ui.write(equip_col, 5, "|  left hand: %s | %s :right hand |" % (
-        pc.equip_label("left hand").ljust(24),
-        pc.equip_label("right hand").rjust(25)))
-    ui.write(equip_col, 6, "|   left leg: %s | %s :right leg  |" % (
-        pc.equip_label("left leg").ljust(24),
-        pc.equip_label("right leg").rjust(25)))
-    ui.write(equip_col, 7, "|  left foot: %s | %s :right foot |" % (
-        pc.equip_label("left foot").ljust(24),
-        pc.equip_label("right foot").rjust(25)))
-    ui.write(equip_col, 8, "+" + ("-" * 38) + "+" + ("-" * 39) + "+")
+    ui.clear()
+    while True:
+        textui.wait_for_minimum_size(ui, 80, 24)
+        (width, height) = ui.get_screen_size()
 
-    # show our inventory
-    slots_used = [ ]
-    ui.write(0, 9, "+" + ("-" * (width-2)) + "+")
-    label = "=[ Inventory ]="
-    ui.write((width - len(label)) // 2, 9, label)
-    inv = pc.get_inventory()
-    inv = inv[inv_ofs:]
-    row = 10
-    while row < height-2:
-        if inv:
-            (slot, item) = inv[0]
-            inv = inv[1:]
-            ui.write(0, row, "| %s - %s |" % (slot, item.name.ljust(width-8)))
-            slots_used.append(slot)
+        # show our equipment
+        equip_col = (width - 80) // 2
+        ui.write(equip_col, 0, "+" + ("-" * 78) + "+")
+        label = "=[ Equipment ]="
+        ui.write((width - len(label)) // 2, 0, label)
+        ui.write(equip_col, 1, "|       head: %s |" % 
+                               pc.equip_label("head").ljust(64))
+        torso = pc.equip_label("torso")
+        cloak = pc.equip_label("cloak")
+        if torso == "nothing":
+            body = cloak
+        elif cloak == "nothing":
+            body = torso
         else:
-            ui.write(0, row, "|" + (" " * (width-2)) + "|")
-        row = row + 1
-    msg = "[ %2d more above / %2d more below ]" % (inv_ofs, len(inv))
-    ui.write(0, height-2, "+-" + msg + ("-" * (width - len(msg) - 3))  + "+")
+            body = torso + ", " + cloak
+        ui.write(equip_col, 2, "|      torso: %s |" % body.ljust(64))
+        ui.write(equip_col, 3, "+" + ("-" * 38) + "+" + ("-" * 39) + "+")
+        ui.write(equip_col, 4, "|   left arm: %s | %s :right arm  |" % (
+            pc.equip_label("left arm").ljust(24),
+            pc.equip_label("right arm").rjust(25)))
+        ui.write(equip_col, 5, "|  left hand: %s | %s :right hand |" % (
+            pc.equip_label("left hand").ljust(24),
+            pc.equip_label("right hand").rjust(25)))
+        ui.write(equip_col, 6, "|   left leg: %s | %s :right leg  |" % (
+            pc.equip_label("left leg").ljust(24),
+            pc.equip_label("right leg").rjust(25)))
+        ui.write(equip_col, 7, "|  left foot: %s | %s :right foot |" % (
+            pc.equip_label("left foot").ljust(24),
+            pc.equip_label("right foot").rjust(25)))
+        ui.write(equip_col, 8, "+" + ("-" * 38) + "+" + ("-" * 39) + "+")
 
-    # TODO: fix ofset on resize
-    display.show_keys_help(ui, width, height, ("Esc", "Up", "Down", "a-z"))
-    ui.get_input()
+        # show our inventory
+        slots_used = [ ]
+        ui.write(0, 9, "+" + ("-" * (width-2)) + "+")
+        label = "=[ Inventory ]="
+        ui.write((width - len(label)) // 2, 9, label)
+        inv = pc.get_inventory()
+        key_ranges = get_slot_ranges(inv)
+        inv_by_slot_chr = {}
+        for (slot, item) in inv:
+            inv_by_slot_chr[ord(slot)] = item
+        inv = inv[inv_ofs:]
+        row = 10
+        while row < height-2:
+            if inv:
+                (slot, item) = inv[0]
+                inv = inv[1:]
+                ui.write(0, row, "| %s - %s |" %
+                                  (slot, item.name.ljust(width-8)))
+                slots_used.append(slot)
+            else:
+                ui.write(0, row, "|" + (" " * (width-2)) + "|")
+            row = row + 1
+        msg = "[ %2d more above / %2d more below ]" % (inv_ofs, len(inv))
+        ui.write(0, height-2, "+-" + msg + ("-" * (width-len(msg)-3)) + "+")
+    
+        # TODO: fix ofset on resize
+        disabled = [ ]
+        if inv_ofs == 0:
+            disabled.append("Up")
+        if not inv:
+            disabled.append("Down")
+        display.show_keys_help(ui, width, height, 
+                               ("Esc", "Up", "Down") + key_ranges, disabled)
+        event = ui.get_input()
+        if event is None: 
+            pass
+        elif event.event_type == "keyboard":
+            if event.key == 27:
+                return
+            elif event.key in inv_by_slot_chr:
+                pass
+        elif event.event_type == "resize":
+            ui.clear()
+            (width, height) = ui.get_screen_size()
 
 school_map = """
 +------------------------------------------------------------------------------+
