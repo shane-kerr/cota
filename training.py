@@ -363,7 +363,7 @@ def school(ui, skill_list, pc):
             things_here = m.items_at(player_x, player_y)
             if things_here:
                 thing_str = map(lambda t: "a " + t.name.lower(), things_here)
-                player_history.add("You see " + human_list(thing_str) + 
+                player_history.add("You see " + human_list(list(thing_str)) + 
                                    " here")
             m.drop_item_at(player, player_x, player_y)
         
