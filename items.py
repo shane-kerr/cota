@@ -1,4 +1,5 @@
 import weakref
+import re
 import dice
 import colors
 
@@ -57,7 +58,23 @@ class ItemDefinitions:
                     # unknown item attribute... probably a misspelling
                     assert(False)
             item_attrs["desc"] = ' '.join(desc.split("\n"))
-            self.defs[item_attrs["name"].lower()] = item_attrs
+            # also add the ability to create based on the name
+            # without the clarification, so if the name is:
+            #   Dolabra (Spiked Axe)
+            # have the ability to create based on:
+            #   dolabra (spiked axe)
+            #   dolabra
+            #   spiked axe
+            lookup_key = item_attrs["name"].lower()
+            self.defs[lookup_key] = item_attrs
+            m = re.match(r'\s*(.*?)\s*(?:\((.*)\))?\s*$', lookup_key)
+            if m:
+                lookup_key = m.group(1)
+                if lookup_key:
+                    self.defs[lookup_key] = item_attrs
+                lookup_key = m.group(2)
+                if lookup_key:
+                    self.defs[lookup_key] = item_attrs
 
 class ItemCollection:
     def __init__(self, item_defs, next_uniq_id=500000):

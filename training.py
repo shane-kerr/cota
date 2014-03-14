@@ -268,9 +268,12 @@ def school(ui, skill_list, pc):
     things_here = m.items_at(player_x, player_y)
 
     m.drop_item_at(player, player_x, player_y)
-    for n in range(20):
-        club = stuff.create_item_from_def("club")
-        m.drop_item_at(club, 2+n, 5)
+    club = stuff.create_item_from_def("club")
+    m.drop_item_at(club, 2, 5)
+    hasta = stuff.create_item_from_def("hasta")
+    m.drop_item_at(hasta, 4, 4)
+    sword = stuff.create_item_from_def("short sword")
+    m.drop_item_at(sword, 6, 2)
 
     (width, height) = ui.get_screen_size()
     player_history = history.history(width)
