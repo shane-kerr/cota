@@ -6,8 +6,8 @@ class ItemDefinitions:
     def __init__(self, skill_list, filename="items.txt"):
         self.defs = { }
 
-        f = open(filename, "r")
         # TODO: catch exceptions on open
+        f = open(filename, "r")
         contents = f.read()
         for item_def_info in contents.strip().split("\n\n"):
             item_def_info = item_def_info.strip()
@@ -56,7 +56,7 @@ class ItemDefinitions:
                 else:
                     # unknown item attribute... probably a misspelling
                     assert(False)
-            item_attrs["descr"] = ' '.join(desc.split("\n"))
+            item_attrs["desc"] = ' '.join(desc.split("\n"))
             self.defs[item_attrs["name"].lower()] = item_attrs
 
 class ItemCollection:
@@ -78,19 +78,19 @@ class ItemCollection:
         return self.create_item(attrs["symbol"], attrs["color"], 
                                 transparent=True, blocking=False, 
                                 name=attrs["name"], weight=attrs["weight"],
-                                movable=True)
+                                movable=True, desc=attrs["desc"])
     def create_item(self, symbol, color, 
                           transparent=False, blocking=True, uniq_id=None,
-                          name=None, weight=0.0, movable=True):
+                          name='', weight=0.0, movable=True, desc=''):
         uniq_id = self._next_uniq_id(uniq_id)
         item = Item(symbol, color, transparent, blocking, uniq_id,
-                    name=name, weight=weight, movable=movable)
+                    name=name, weight=weight, movable=movable, desc=desc)
         self.items[uniq_id] = item
         return item
     def copy_item(self, item):
-        return self.create_item(item.symbol, item.color, 
-                                item.transparent, item.blocking,
-                                item.name, item.weight, item.movable)
+        return self.create_item(item.symbol, item.color, item.transparent, 
+                                item.blocking, item.name, item.weight, 
+                                item.movable, item.desc)
     def dump(self):
         items = [ ]
         for item in self.items.values():
@@ -108,7 +108,8 @@ class ItemCollection:
                                          uniq_id=item["_id"],
                                          name=item["name"],
                                          weight=item["weight"],
-                                         movable=item["movable"],)
+                                         movable=item["movable"],
+                                         desc=item["desc"],)
             hold_item.pos = undump_pos(item["pos"])
             hold_items.append(hold_item)
         # we return an array holding the items, because the item collection
@@ -118,7 +119,7 @@ class ItemCollection:
 class Item:
     def __init__(self, symbol, color, 
                        transparent=False, blocking=True, uniq_id=None,
-                       name=None, weight=0.0, movable=True):
+                       name=None, weight=0.0, movable=True, desc=None):
         self.symbol = symbol
         self.color = color
         self.transparent = transparent
@@ -128,15 +129,18 @@ class Item:
         self.name = name
         self.weight = weight
         self.movable = movable
+        self.desc = desc
     def __repr__(self):
         if self.pos:
             pos_str = "(%d,%d)" % self.pos
         else:
             pos_str = "None"
-        return "<Item('%s',%s,%s,%s,%s,%d,'%s',%.1f,%s)>" % (self.symbol,
+        return "<Item('%s',%s,%s,%s,%s,%d,'%s',%.1f,%s,%s)>" % (self.symbol,
                                     self.color, self.transparent,
                                     self.blocking, pos_str, self.uniq_id,
-                                    self.name, self.weight, self.movable)
+                                    self.name.encode('string-escape'), 
+                                    self.weight, self.movable,
+                                    self.desc.encode('string-escape'))
     def dump(self):
         return { "symbol": self.symbol, 
                  "color": dump_color(self.color),
@@ -145,6 +149,7 @@ class Item:
                  "name": self.name, 
                  "weight": self.weight,
                  "movable": self.movable,
+                 "desc": self.desc,
                  "pos": dump_pos(self.pos), 
                  "_id": self.uniq_id, } 
     def view(self):

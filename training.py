@@ -63,8 +63,7 @@ def item_view(ui, item):
         ui.write(item_col+item_wid, item_row+2, "  ", shadow_attr)
         item_row = item_row + 3
 
-#        desc_lines = textwrap.wrap(item.desc, item_wid-4)
-        desc_lines = textwrap.wrap("A club is among the simplest of all weapons. A club is essentially a short staff, or stick, usually made of wood, and wielded as a weapon since prehistoric times.", item_wid-4)
+        desc_lines = textwrap.wrap(item.desc, item_wid-4)
         while item_row < (item_hig-1):
             if desc_lines:
                 txt = desc_lines[0]
