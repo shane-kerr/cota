@@ -2,7 +2,8 @@ import glob
 import textwrap
 import textui
 from keymap import *
-from playerchar import *
+from humans import Skills
+import playerchar
 import display
 
 class background:
@@ -430,7 +431,7 @@ def do_other_skills(ui, bg, pc, skill_list):
 
 def make_char(ui):
     skill_list = Skills()
-    pc = PlayerCharacter()
+    pc = playerchar.PlayerCharacter()
     bg = background_selection(ui)
     while do_occupation_skills(ui, bg, pc, skill_list) == "prev":
         bg = background_selection(ui)
