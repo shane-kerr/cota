@@ -53,7 +53,7 @@ class PlayerCharacter:
         self.cthulhu_mythos = 0
 
         # places to store stuff
-        self.slots = {
+        self.equip = {
             "head": None,
             "torso": None,
             "cloak": None,
@@ -109,7 +109,8 @@ class PlayerCharacter:
             slot = self.avail_slots[next_slot_ofs]
             if self.inventory[slot] is None:
                 self.last_slot_ofs = next_slot_ofs
-                self.slot_stability_cache[item.uniq_id] = [slot, weakref.ref(item)]
+                self.slot_stability_cache[item.uniq_id] = [slot, 
+                                                           weakref.ref(item)]
                 return slot
             next_slot_ofs = (next_slot_ofs + 1) % len(self.avail_slots)
         # no free slots... bummer
@@ -124,9 +125,16 @@ class PlayerCharacter:
         history.add("You picked up the %s" % item.name.lower())
         return True
 
-#if __name__ == "__main__":
-#  import pprint
-#  skills = Skills()
-#  pprint.pprint(skills.names)
-#  pprint.pprint(skills.defaults)
+    def equip_label(self, part):
+        if self.equip[part] is None:
+            return "nothing"
+        else:
+            return self.equip[part].name
+
+    def get_inventory(self):
+        inv = [ ]
+        for slot in self.avail_slots:
+            if self.inventory[slot]:
+                inv.append((slot, self.inventory[slot]))
+        return inv
 
