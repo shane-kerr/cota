@@ -101,6 +101,12 @@ def item_view(ui, item):
             # don't have to redraw the underlying information
             ui.clear()
 
+def eq_col(ui, s):
+    if s == "nothing":
+        return ui.color_attr(textui.BLACK, textui.WHITE)
+    else:
+        return ui.color_attr(textui.WHITE, textui.WHITE, textui.BOLD)
+
 def inventory(ui, pc, inv_ofs, player_history):
     # TODO: truncate names in case we get very long item names
     ui.clear()
@@ -114,8 +120,10 @@ def inventory(ui, pc, inv_ofs, player_history):
         ui.write(equip_col, 0, "+" + ("-" * 78) + "+")
         label = "=[ Equipment ]="
         ui.write((width - len(label)) // 2, 0, label)
-        ui.write(equip_col, 1, "|       head: %s |" % 
-                               pc.equip_label("head").ljust(64))
+        ui.write(equip_col, 1, "|       head: ")
+        part = pc.equip_label("head")
+        ui.write(equip_col+14, 1, part.ljust(64), eq_col(ui, part))
+        ui.write(equip_col+79, 1, "|")
         torso = pc.equip_label("torso")
         cloak = pc.equip_label("cloak")
         if torso == "nothing":
@@ -130,8 +138,11 @@ def inventory(ui, pc, inv_ofs, player_history):
             pc.equip_label("left arm").ljust(24),
             pc.equip_label("right arm").rjust(25)))
         ui.write(equip_col, 5, "|  left hand: %s | %s :right hand |" % (
-            pc.equip_label("left hand").ljust(24),
-            pc.equip_label("right hand").rjust(25)))
+                (" " * 24), (" " * 25)))
+        part = pc.equip_label("left hand")
+        ui.write(equip_col+14, 5, part.ljust(24), eq_col(ui, part))
+        part = pc.equip_label("right hand")
+        ui.write(equip_col+41, 5, part.rjust(25), eq_col(ui, part))
         ui.write(equip_col, 6, "|   left leg: %s | %s :right leg  |" % (
             pc.equip_label("left leg").ljust(24),
             pc.equip_label("right leg").rjust(25)))
