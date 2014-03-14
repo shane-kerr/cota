@@ -29,6 +29,7 @@ KEY_END = -0x23
 KEY_PGDN = -0x22
 KEY_F1 = -0x70
 KEY_ENTER = ord('\r')
+KEY_ESC = 27
 
 # Windows types are documented here:
 # http://msdn.microsoft.com/en-us/library/windows/desktop/aa383751%28v=vs.85%29.aspx

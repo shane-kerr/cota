@@ -4,6 +4,7 @@ import display
 import items
 import grid
 import history
+import textwrap
 
 PLAYER_COLOR=(textui.YELLOW, textui.BLACK, textui.BOLD)
 
@@ -33,6 +34,67 @@ def get_slot_ranges(inv):
     else:
         ranges.append(range_start + "-" + range_end)
     return tuple(ranges)
+
+def item_view(ui, item):
+    border_attr = ui.color_attr(textui.BLACK, textui.BLUE)
+    view_attr = ui.color_attr(textui.WHITE, textui.BLUE, textui.BOLD)
+    shadow_attr = ui.color_attr(textui.BLACK, textui.BLACK)
+    while True:
+        textui.wait_for_minimum_size(ui, 80, 24)
+        (width, height) = ui.get_screen_size()
+
+        item_wid = (width * 3) // 4
+        item_col = (width - item_wid) // 2
+        item_hig = (height * 3) // 4
+        item_row = (height - item_hig) // 2
+        item_row_max = item_row + item_hig
+
+        ui.write(item_col, item_row, 
+            "+" + ("-"*(item_wid-2)) + "+", border_attr)
+        ui.write(item_col, item_row+1,
+            "|" + (" "*(item_wid-2)) + "|", border_attr)
+        ui.write(item_col+1, item_row+1, 
+            item.name.center(item_wid-2), view_attr)
+        ui.write(item_col+item_wid, item_row+1, "  ", shadow_attr)
+        ui.write(item_col, item_row+2, 
+            "+" + ("-"*(item_wid-2)) + "+", border_attr)
+        ui.write(item_col+item_wid, item_row+2, "  ", shadow_attr)
+        item_row = item_row + 3
+
+#        desc_lines = textwrap.wrap(item.desc, item_wid-4)
+        desc_lines = textwrap.wrap("A club is among the simplest of all weapons. A club is essentially a short staff, or stick, usually made of wood, and wielded as a weapon since prehistoric times.", item_wid-4)
+        while item_row < (item_hig-1):
+            if desc_lines:
+                txt = desc_lines[0]
+                desc_lines = desc_lines[1:]
+            else:
+                txt = ''
+            ui.write(item_col, item_row, 
+                "|" + (" " * (item_wid-2)) + "|", border_attr)
+            ui.write(item_col+2, item_row, txt.ljust(item_wid-4), view_attr)
+            ui.write(item_col+item_wid, item_row, "  ", shadow_attr)
+            item_row = item_row + 1
+
+        label = " Keys=Esc/d/e "
+        ui.write(item_col, item_row, 
+            "+" + ("-" * (item_wid-2)) + "+", border_attr)
+        ui.write((width-len(label)) // 2, item_row, label, border_attr)
+        ui.write(((width-len(label)) // 2) + 6, item_row, "Esc/d/e", view_attr)
+        ui.write(((width-len(label)) // 2) + 9, item_row, "/", border_attr)
+        ui.write(((width-len(label)) // 2) + 11, item_row, "/", border_attr)
+        ui.write(item_col+item_wid, item_row, "  ", shadow_attr)
+        ui.write(item_col+2, item_row+1, " " * item_wid, shadow_attr)
+
+        event = ui.get_input()
+        if event is None:
+            pass
+        elif event.event_type == "keyboard":
+            if event.key == textui.KEY_ESC:
+                return
+        elif event.event_type == "resize":
+            # we get a slightly ugly screen if we resize, but then we
+            # don't have to redraw the underlying information
+            ui.clear()
 
 def inventory(ui, pc, inv_ofs):
     # TODO: truncate names in case we get very long item names
@@ -116,7 +178,7 @@ def inventory(ui, pc, inv_ofs):
         if event is None: 
             pass
         elif event.event_type == "keyboard":
-            if event.key == 27:
+            if event.key == textui.KEY_ESC:
                 return inv_ofs
             elif event.key == textui.KEY_UP:
                 inv_ofs = max(0, inv_ofs-1)
@@ -124,7 +186,9 @@ def inventory(ui, pc, inv_ofs):
                 if (inv_size - inv_win_size) > inv_ofs:
                     inv_ofs = inv_ofs + 1
             elif event.key in inv_by_slot_chr:
-                pass
+                ui.write(0, height-1, " " * (width-1))
+                item_view(ui, inv_by_slot_chr[event.key])
+                ui.clear()
         elif event.event_type == "resize":
             ui.clear()
             (width, height) = ui.get_screen_size()
@@ -246,7 +310,7 @@ def school(ui, skill_list, pc):
             elif event.key == ord('i'):
                 inv_ofs = inventory(ui, pc, inv_ofs)
                 ui.clear()
-            elif event.key == 27:
+            elif event.key == textui.KEY_ESC:
                 return
         elif event.event_type == 'resize':
             ui.clear()

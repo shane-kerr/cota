@@ -28,6 +28,7 @@ KEY_END = curses.KEY_END
 KEY_PGDN = curses.KEY_NPAGE
 KEY_F1 = curses.KEY_F1
 KEY_ENTER = ord('\n')
+KEY_ESC = 27
 
 class textui_curses:
     def __init__(self, scr):

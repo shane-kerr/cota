@@ -302,7 +302,7 @@ def do_occupation_skills(ui, bg, pc, skill_list):
                     cur = cur - 1
             elif input_event.key == textui.KEY_ENTER:
                 return "next"
-            elif input_event.key == 27:
+            elif input_event.key == textui.KEY_ESC:
                 return "prev"
         elif input_event.event_type == "resize":
             refresh = True
@@ -397,7 +397,7 @@ def do_other_skills(ui, bg, pc, skill_list):
                     cur = cur - 1
             elif input_event.key == textui.KEY_ENTER:
                 return "next"
-            elif input_event.key == 27:
+            elif input_event.key == textui.KEY_ESC:
                 return "prev"
         elif input_event.event_type == "resize":
             refresh = True
