@@ -90,7 +90,11 @@ def item_view(ui, item):
             pass
         elif event.event_type == "keyboard":
             if event.key == textui.KEY_ESC:
-                return
+                return None
+            elif event.key == ord('d'):
+                return "drop"
+            elif event.key == ord('e'):
+                return "equip"
         elif event.event_type == "resize":
             # we get a slightly ugly screen if we resize, but then we
             # don't have to redraw the underlying information
@@ -179,7 +183,7 @@ def inventory(ui, pc, inv_ofs):
             pass
         elif event.event_type == "keyboard":
             if event.key == textui.KEY_ESC:
-                return inv_ofs
+                return [ inv_ofs, None, None ]
             elif event.key == textui.KEY_UP:
                 inv_ofs = max(0, inv_ofs-1)
             elif event.key == textui.KEY_DOWN:
@@ -187,8 +191,12 @@ def inventory(ui, pc, inv_ofs):
                     inv_ofs = inv_ofs + 1
             elif event.key in inv_by_slot_chr:
                 ui.write(0, height-1, " " * (width-1))
-                item_view(ui, inv_by_slot_chr[event.key])
+                action = item_view(ui, inv_by_slot_chr[event.key])
                 ui.clear()
+                if action == "drop":
+                    return [ inv_ofs, "drop", chr(event.key) ]
+                elif action == "equip":
+                    return [ inv_ofs, "equip", chr(event.key) ]
         elif event.event_type == "resize":
             ui.clear()
             (width, height) = ui.get_screen_size()
@@ -231,9 +239,19 @@ def apply_school_map(m, stuff):
                 wall = stuff.create_item('#', grid.WALL_COLOR)
                 m.drop_item_at(wall, x, y)
             elif rows[y][x] == 'D':
-                wall = stuff.create_item('+', grid.DOOR_COLOR, blocking=False, 
+                wall = stuff.create_item('+', grid.DOOR_COLOR, blocking=False,
                                          name="door")
                 m.drop_item_at(wall, x, y)
+
+def human_list(items):
+    if len(items) == 0:
+        return ""
+    elif len(items) == 1:
+        return items[0]
+    elif len(items) == 2:
+        return items[0] + " and " + items[1]
+    else:
+        return ", ".join(items[0:-1]) + ", and " + items[-1]
 
 def school(ui, skill_list, pc):
     ui.clear()
@@ -308,7 +326,12 @@ def school(ui, skill_list, pc):
                     if pc.get_item(things_here[-2], player_history):
                         m.pickup_item(things_here[-2])
             elif event.key == ord('i'):
-                inv_ofs = inventory(ui, pc, inv_ofs)
+                [ inv_ofs, action, slot ] = inventory(ui, pc, inv_ofs)
+                if action == 'drop':
+                    item = pc.drop_item(slot, player_history)
+                    m.drop_item_at(item, player_x, player_y)
+                    m.pickup_item(player)
+                    m.drop_item_at(player, player_x, player_y)
                 ui.clear()
             elif event.key == textui.KEY_ESC:
                 return
@@ -318,8 +341,9 @@ def school(ui, skill_list, pc):
             m.pickup_item(player)
             player_x, player_y = new_x, new_y
             things_here = m.items_at(player_x, player_y)
-            for thing in things_here:
-                player_history.add('You see a %s here' % thing.name.lower())
+            if things_here:
+                thing_str = map(lambda t: "a " + t.name.lower(), things_here)
+                player_history.add("You see " + human_list(thing_str))
             m.drop_item_at(player, player_x, player_y)
         
 

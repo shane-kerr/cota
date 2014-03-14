@@ -138,3 +138,10 @@ class PlayerCharacter:
                 inv.append((slot, self.inventory[slot]))
         return inv
 
+    def drop_item(self, slot, history):
+        # XXX: insure not equipped
+        item = self.inventory[slot]
+        self.inventory[slot] = None
+        history.add("You dropped the %s" % item.name.lower())
+        return item
+
