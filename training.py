@@ -101,9 +101,10 @@ def item_view(ui, item):
             # don't have to redraw the underlying information
             ui.clear()
 
-def inventory(ui, pc, inv_ofs):
+def inventory(ui, pc, inv_ofs, player_history):
     # TODO: truncate names in case we get very long item names
     ui.clear()
+    dropped_items = [ ]
     while True:
         textui.wait_for_minimum_size(ui, 80, 24)
         (width, height) = ui.get_screen_size()
@@ -184,7 +185,7 @@ def inventory(ui, pc, inv_ofs):
             pass
         elif event.event_type == "keyboard":
             if event.key == textui.KEY_ESC:
-                return [ inv_ofs, None, None ]
+                return [ inv_ofs, dropped_items ]
             elif event.key == textui.KEY_UP:
                 inv_ofs = max(0, inv_ofs-1)
             elif event.key == textui.KEY_DOWN:
@@ -195,7 +196,8 @@ def inventory(ui, pc, inv_ofs):
                 action = item_view(ui, inv_by_slot_chr[event.key])
                 ui.clear()
                 if action == "drop":
-                    return [ inv_ofs, "drop", chr(event.key) ]
+                    item = pc.drop_item(chr(event.key), player_history)
+                    dropped_items.append(item)
                 elif action == "equip":
                     pc.equip_item(chr(event.key))
         elif event.event_type == "resize":
@@ -345,12 +347,11 @@ def school(ui, skill_list, pc):
                                        player_history):
                             m.pickup_item(things_here[item_to_get])
             elif event.key == ord('i'):
-                [ inv_ofs, action, slot ] = inventory(ui, pc, inv_ofs)
-                if action == 'drop':
-                    item = pc.drop_item(slot, player_history)
+                [ inv_ofs, drops ] = inventory(ui, pc, inv_ofs, player_history)
+                for item in drops:
                     m.drop_item_at(item, player_x, player_y)
-                    m.pickup_item(player)
-                    m.drop_item_at(player, player_x, player_y)
+                m.pickup_item(player)
+                m.drop_item_at(player, player_x, player_y)
                 ui.clear()
             elif event.key == textui.KEY_ESC:
                 return
