@@ -113,6 +113,11 @@ def school(ui, skill_list, pc):
             elif event.key in keymap.keys_dr:
                 new_x = player_x + 1
                 new_y = player_y + 1
+            elif event.key == ord('g'):
+                if len(things_here) > 1:
+                    # TODO: need a menu of stuff to pick up
+                    if pc.get_item(things_here[-2], player_history):
+                        m.pickup_item(things_here[-2])
             elif event.key == 27:
                 return
         elif event.event_type == 'resize':

@@ -1,4 +1,5 @@
 import dice
+import weakref
 
 class Skills:
     def __init__(self, filename="skills.txt"):
@@ -50,6 +51,77 @@ class PlayerCharacter:
 
         # we'll treat this specially...
         self.cthulhu_mythos = 0
+
+        # places to store stuff
+        self.slots = {
+            "head": None,
+            "torso": None,
+            "cloak": None,
+            "left arm": None,
+            "right arm": None,
+            "left hand": None,
+            "right hand": None,
+            "left leg": None,
+            "right foot": None,
+            "left foot": None,
+            "right leg": None,
+        }
+        self.inventory = { }
+        self.avail_slots = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        for inv_slot in self.avail_slots:
+            self.inventory[inv_slot] = None
+        self.slot_stability_cache = { }
+        self.last_slot_ofs = len(self.avail_slots)-1
+
+        # -- weight limits --
+        # We note that a typical legionary would carry 36.5 kg, which is 
+        # about 110 libra.
+        # Given an average STR of 10 and SIZ of 13, that works out to 
+        # about 4.8 libra per (STR+SIZ).
+        # Based on this, we'll set our weight limit to (STR+SIZ)*5
+        # (Call of Cthulhu doesn't really have limits defined, and 
+        # RuneQuest uses the abstract concept of "encumbrance".)
+        self.weight_limit = (self.STR + self.SIZ) * 5
+        self.weight_carried = 0
+
+    # There are a few algorithms possible for finding the next free slot.
+    # First of all, we try to see if the item has the previous slot that
+    # it used available and use that.
+    # Next, we try to get the next slot (so if we picked "a" last time, we 
+    # go for "b")
+    def _find_slot(self, item_uniq_id):
+        # clear items that have disappeared from the slot stability cache
+        items_destroyed = [ ]
+        for (uniq_id, slot_ref) in self.slot_stability_cache.items():
+            slot = slot_ref()
+            if slot is None:
+                items_destroyed.append(uniq_id)
+        for uniq_id in items_destroyed:
+            del self.slot_stability_cache[uniq_id]
+        # now see if our item is in our slot cache, and if that slot is free
+        if item_uniq_id in self.slot_stability_cache:
+            slot = self.slot_stability_cache[item_uniq_id]()
+            if self.inventory[slot] is None:
+                return slot
+        # if not, we have to find a free slot
+        next_slot_ofs = (self.last_slot_ofs + 1) % len(self.avail_slots)
+        while next_slot_ofs != self.last_slot_ofs:
+            slot = self.avail_slots[next_slot_ofs]
+            if self.inventory[slot] is None:
+                self.last_slot_ofs = next_slot_ofs
+                return slot
+            next_slot_ofs = (next_slot_ofs + 1) % len(self.avail_slots)
+        # no free slots... bummer
+        return None
+
+    def get_item(self, item, history):
+        # check weight, adjust weight
+        slot = self._find_slot(item.uniq_id)
+        if slot is None:
+            return False
+        self.inventory[slot] = item
+        history.add("You picked up the %s" % item.name.lower())
+        return True
 
 #if __name__ == "__main__":
 #  import pprint
