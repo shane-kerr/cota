@@ -122,7 +122,8 @@ class PlayerCharacter:
         if slot is None:
             return False
         self.inventory[slot] = item
-        history.add("You picked up the %s" % item.name.lower())
+        history.add("You picked up the %s" % item.name.lower() + 
+                    " (you can drop or equip from inventory)")
         return True
 
     def equip_label(self, part):
