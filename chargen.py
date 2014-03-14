@@ -325,7 +325,9 @@ def do_occupation_skills(ui, bg, pc, skill_list):
 # XXX: cut & paste hack due to lateness of hour and desire for progress
 # TODO: merge and refactor
 def do_other_skills(ui, bg, pc, skill_list):
-    # count the unassigned skills in the background
+    # get skill levels on entry - can't go lower than these
+    skills_on_entry = pc.skill_levels.copy()
+    # count the unassigned skills from personal interests
     free_skill_points = pc.INT * 10
     # set up screen
     ui.set_default_color_attr(textui.BLACK, textui.WHITE)
@@ -355,7 +357,7 @@ def do_other_skills(ui, bg, pc, skill_list):
         elif cur == len(skill_list.names) - 1:
             disabled.append("Down")
         name = skill_list.names[cur]
-        if pc.skill_levels[name] == pc.skill_defaults[name]:
+        if pc.skill_levels[name] == skills_on_entry[name]:
             disabled.append("Left")
         if free_skill_points <= 0:
             disabled.append("Right")
@@ -376,7 +378,7 @@ def do_other_skills(ui, bg, pc, skill_list):
                 if skill_list.names[cur] == '---':
                     cur = cur - 1
             elif input_event.key in keys_l:
-                if not pc.skill_levels[name] == pc.skill_defaults[name]:
+                if not pc.skill_levels[name] == skills_on_entry[name]:
                     new_level = pc.skill_levels[name]
                     new_level = new_level - (new_level % 5)
                     if new_level == pc.skill_levels[name]:
