@@ -49,8 +49,9 @@ STD_ERROR_HANDLE = -12
 
 # to read input, we need to enable input, using these constants
 # http://msdn.microsoft.com/en-us/library/windows/desktop/ms686033%28v=vs.85%29.aspx
-ENABLE_WINDOW_INPUT = 0x0008
-ENABLE_MOUSE_INPUT  = 0x0010
+ENABLE_PROCESSED_INPUT = 0x0001
+ENABLE_WINDOW_INPUT    = 0x0008
+ENABLE_MOUSE_INPUT     = 0x0010
 
 # the event types are identified with these constants
 # http://msdn.microsoft.com/en-us/library/windows/desktop/ms683499%28v=vs.85%29.aspx
@@ -181,7 +182,7 @@ class textui_win:
         self.start_cursor_info = cci
         # allow input events on resize and mouse stuff
         self.kern.SetConsoleMode(self.hIn, 
-                                 ENABLE_WINDOW_INPUT| ENABLE_MOUSE_INPUT)
+               ENABLE_PROCESSED_INPUT | ENABLE_WINDOW_INPUT| ENABLE_MOUSE_INPUT)
     def restore(self):
         self.cursor_x = self.start_cursor_x
         self.cursor_y = self.start_cursor_y
