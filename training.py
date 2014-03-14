@@ -287,10 +287,17 @@ def school(ui, skill_list, pc):
                           player_x + h_half, player_y + v_half, 8)
         display.main_display(ui, width, height, view, pc, player_history)
 
-        if len(things_here) > 1:
-            disabled = None
-        else:
-            disabled = ("g")
+        disabled = [ ]
+        if len(things_here) <= 1:
+            disabled.append("g")
+        if not m.can_move_onto(player_x, player_y-1):
+            disabled.append("Up")
+        if not m.can_move_onto(player_x, player_y+1):
+            disabled.append("Down")
+        if not m.can_move_onto(player_x-1, player_y):
+            disabled.append("Left")
+        if not m.can_move_onto(player_x+1, player_y):
+            disabled.append("Right")
         display.show_keys_help(ui, width, height,
                   ("Esc", "Up", "Down", "Left", "Right", "g", "i"), disabled)
 
