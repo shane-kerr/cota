@@ -19,13 +19,14 @@ def get_slot_ranges(inv):
     inv = inv[1:]
     while inv:
         slot = inv[0][0]
-        if ord(range_start)+1 == ord(slot):
+        if ord(range_end)+1 == ord(slot):
             range_end = slot
         else:
             if range_start == range_end:
                 ranges.append(range_start)
             else:
                 ranges.append(range_start + "-" + range_end)
+            range_start = slot
         inv = inv[1:]
     if range_start == range_end:
         ranges.append(range_start)
@@ -33,10 +34,8 @@ def get_slot_ranges(inv):
         ranges.append(range_start + "-" + range_end)
     return tuple(ranges)
 
-def inventory(ui, pc):
+def inventory(ui, pc, inv_ofs):
     # TODO: truncate names in case we get very long item names
-    inv_ofs = 0
-
     ui.clear()
     while True:
         textui.wait_for_minimum_size(ui, 80, 24)
@@ -78,11 +77,19 @@ def inventory(ui, pc):
         ui.write(0, 9, "+" + ("-" * (width-2)) + "+")
         label = "=[ Inventory ]="
         ui.write((width - len(label)) // 2, 9, label)
+
+        inv_win_size = height - 12
         inv = pc.get_inventory()
+        inv_size = len(inv)
         key_ranges = get_slot_ranges(inv)
         inv_by_slot_chr = {}
         for (slot, item) in inv:
             inv_by_slot_chr[ord(slot)] = item
+
+        # fix up our offset if necessary
+        inv_ofs = min(inv_ofs, inv_size - inv_win_size)
+        inv_ofs = max(inv_ofs, 0)
+
         inv = inv[inv_ofs:]
         row = 10
         while row < height-2:
@@ -98,11 +105,10 @@ def inventory(ui, pc):
         msg = "[ %2d more above / %2d more below ]" % (inv_ofs, len(inv))
         ui.write(0, height-2, "+-" + msg + ("-" * (width-len(msg)-3)) + "+")
     
-        # TODO: fix ofset on resize
         disabled = [ ]
         if inv_ofs == 0:
             disabled.append("Up")
-        if not inv:
+        if (inv_size - inv_win_size) <= inv_ofs:
             disabled.append("Down")
         display.show_keys_help(ui, width, height, 
                                ("Esc", "Up", "Down") + key_ranges, disabled)
@@ -111,7 +117,12 @@ def inventory(ui, pc):
             pass
         elif event.event_type == "keyboard":
             if event.key == 27:
-                return
+                return inv_ofs
+            elif event.key == textui.KEY_UP:
+                inv_ofs = max(0, inv_ofs-1)
+            elif event.key == textui.KEY_DOWN:
+                if (inv_size - inv_win_size) > inv_ofs:
+                    inv_ofs = inv_ofs + 1
             elif event.key in inv_by_slot_chr:
                 pass
         elif event.event_type == "resize":
@@ -174,11 +185,14 @@ def school(ui, skill_list, pc):
     things_here = m.items_at(player_x, player_y)
 
     m.drop_item_at(player, player_x, player_y)
-    club = stuff.create_item_from_def("club")
-    m.drop_item_at(club, 5, 8)
+    for n in range(20):
+        club = stuff.create_item_from_def("club")
+        m.drop_item_at(club, 2+n, 5)
 
     (width, height) = ui.get_screen_size()
     player_history = history.history(width)
+
+    inv_ofs = 0
 
     while True:
         textui.wait_for_minimum_size(ui, 80, 24)
@@ -230,7 +244,7 @@ def school(ui, skill_list, pc):
                     if pc.get_item(things_here[-2], player_history):
                         m.pickup_item(things_here[-2])
             elif event.key == ord('i'):
-                inventory(ui, pc)
+                inv_ofs = inventory(ui, pc, inv_ofs)
                 ui.clear()
             elif event.key == 27:
                 return
