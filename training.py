@@ -240,7 +240,7 @@ def apply_school_map(m, stuff):
                 m.drop_item_at(wall, x, y)
             elif rows[y][x] == 'D':
                 wall = stuff.create_item('+', grid.DOOR_COLOR, blocking=False,
-                                         name="door")
+                                         name="door", movable=False)
                 m.drop_item_at(wall, x, y)
 
 def human_list(items):
@@ -287,8 +287,14 @@ def school(ui, skill_list, pc):
                           player_x + h_half, player_y + v_half, 8)
         display.main_display(ui, width, height, view, pc, player_history)
 
+        # figure out what item we would get if we picked something up
+        item_to_get = None
+        for n in range(len(things_here)-2, -1, -1):
+            if things_here[n].movable:
+                item_to_get = n
+
         disabled = [ ]
-        if len(things_here) <= 1:
+        if item_to_get is None:
             disabled.append("g")
         if not m.can_move_onto(player_x, player_y-1):
             disabled.append("Up")
@@ -330,8 +336,10 @@ def school(ui, skill_list, pc):
             elif event.key == ord('g'):
                 if len(things_here) > 1:
                     # TODO: need a menu of stuff to pick up
-                    if pc.get_item(things_here[-2], player_history):
-                        m.pickup_item(things_here[-2])
+                    if item_to_get is not None:
+                        if pc.get_item(things_here[item_to_get],
+                                       player_history):
+                            m.pickup_item(things_here[item_to_get])
             elif event.key == ord('i'):
                 [ inv_ofs, action, slot ] = inventory(ui, pc, inv_ofs)
                 if action == 'drop':

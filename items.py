@@ -77,17 +77,20 @@ class ItemCollection:
         attrs = self.item_defs.defs[def_name.lower()]
         return self.create_item(attrs["symbol"], attrs["color"], 
                                 transparent=True, blocking=False, 
-                                name=attrs["name"])
+                                name=attrs["name"], weight=attrs["weight"],
+                                movable=True)
     def create_item(self, symbol, color, 
                           transparent=False, blocking=True, uniq_id=None,
-                          name=None):
+                          name=None, weight=0.0, movable=True):
         uniq_id = self._next_uniq_id(uniq_id)
-        item = Item(symbol, color, transparent, blocking, uniq_id, name=name)
+        item = Item(symbol, color, transparent, blocking, uniq_id,
+                    name=name, weight=weight, movable=movable)
         self.items[uniq_id] = item
         return item
     def copy_item(self, item):
         return self.create_item(item.symbol, item.color, 
-                                item.transparent, item.blocking)
+                                item.transparent, item.blocking,
+                                item.name, item.weight, item.movable)
     def dump(self):
         items = [ ]
         for item in self.items.values():
@@ -102,7 +105,10 @@ class ItemCollection:
                                          color=undump_color(item["color"]),
                                          transparent=item["transparent"],
                                          blocking=item["blocking"],
-                                         uniq_id=item["_id"])
+                                         uniq_id=item["_id"],
+                                         name=item["name"],
+                                         weight=item["weight"],
+                                         movable=item["movable"],)
             hold_item.pos = undump_pos(item["pos"])
             hold_items.append(hold_item)
         # we return an array holding the items, because the item collection
@@ -112,7 +118,7 @@ class ItemCollection:
 class Item:
     def __init__(self, symbol, color, 
                        transparent=False, blocking=True, uniq_id=None,
-                       name=None):
+                       name=None, weight=0.0, movable=True):
         self.symbol = symbol
         self.color = color
         self.transparent = transparent
@@ -120,20 +126,25 @@ class Item:
         self.pos = None
         self.uniq_id = uniq_id
         self.name = name
+        self.weight = weight
+        self.movable = movable
     def __repr__(self):
         if self.pos:
             pos_str = "(%d,%d)" % self.pos
         else:
             pos_str = "None"
-        return "<Item('%s',%s,%s,%s,%s,%d)>" % (self.symbol, self.color,
-                                    self.transparent, self.blocking, 
-                                    pos_str, self.uniq_id)
+        return "<Item('%s',%s,%s,%s,%s,%d,'%s',%.1f,%s)>" % (self.symbol,
+                                    self.color, self.transparent,
+                                    self.blocking, pos_str, self.uniq_id,
+                                    self.name, self.weight, self.movable)
     def dump(self):
         return { "symbol": self.symbol, 
                  "color": dump_color(self.color),
                  "transparent": self.transparent, 
                  "blocking": self.blocking,
                  "name": self.name, 
+                 "weight": self.weight,
+                 "movable": self.movable,
                  "pos": dump_pos(self.pos), 
                  "_id": self.uniq_id, } 
     def view(self):
