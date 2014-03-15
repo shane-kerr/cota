@@ -277,7 +277,7 @@ def school(ui, skill_list, pc):
     apply_school_map(m, stuff)
     mm = grid.MapMemory(m)
 
-    player = stuff.create_item('@', PLAYER_COLOR, True)
+    player = stuff.create_item('@', PLAYER_COLOR, True, blocking=False)
     player_x = 2
     player_y = 2
 
@@ -293,7 +293,8 @@ def school(ui, skill_list, pc):
     scutum = stuff.create_item_from_def("scutum")
     m.drop_item_at(scutum, 5, 1)
 
-    john = stuff.create_item('p', NPC_COLOR, transparent=True, name="Christian")
+    john = stuff.create_item('p', NPC_COLOR, transparent=True,
+                             name="Christian", blocking=False)
     john_npc = humans.Human()
     john_personality = humans.Martyr()
     m.drop_item_at(john, 7, 4)

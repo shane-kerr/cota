@@ -11,6 +11,15 @@ class Square:
     def __init__(self, ch='.', attr=FLOOR_COLOR):
         self.stuff = [ ]
         self.default = (ch, attr)
+    def __eq__(self, other):
+        return (self.stuff == other.stuff) and (self.default == other.default)
+    def __ne__(self, other):
+        return (self.stuff != other.stuff) or (self.default != other.default)
+    def __str__(self):
+        return "Square(default=('%s',(%d,%d,%d)),len(stuff)=%d)" % (
+            self.default[0],
+            self.default[1][0], self.default[1][1], self.default[1][2],
+            len(self.stuff))
     def view(self):
         if self.stuff:
             return self.stuff[-1].view()
@@ -262,7 +271,7 @@ class MapMemory:
     def __init__(self, m):
         self.m = m
         self.grid = [ ]
-        nowhere = (' ', DARK_COLOR)
+        nowhere = Square(' ', DARK_COLOR)
         for col in range(m.width):
             new_col = [ ]
             for row in range(m.height):
@@ -271,7 +280,7 @@ class MapMemory:
 
 
     def add_view(self, x, y, view):
-        nowhere = (' ', DARK_COLOR)
+        nowhere = Square(' ', DARK_COLOR)
         for col in range(len(view)):
             for row in range(len(view[0])):
                 square = view[col][row]
@@ -281,7 +290,7 @@ class MapMemory:
     def read_memory(self, x0, y0, x1, y1):
         wide = x1 - x0 + 1
         high = y1 - y0 + 1
-        nowhere = (' ', DARK_COLOR)
+        nowhere = Square(' ', DARK_COLOR)
         nowhere_col = [ nowhere, ] * high
         view = []
         for x in range(x0, 0):
@@ -307,7 +316,7 @@ class MapMemory:
         x_center = (x1 + x0) // 2
         y_center = (y1 + y0) // 2
         view = self.m.view(x_center, y_center, wid, hig, r)
-        nowhere = (' ', DARK_COLOR)
+        nowhere = Square(' ', DARK_COLOR)
         for x in range(max(x0, 0), min(x1+1, self.m.width)):
             for y in range(max(y0, 0), min(y1+1, self.m.height)):
                 square = view[x-x0][y-y0]
@@ -316,5 +325,6 @@ class MapMemory:
                     self.grid[x][y] = square
                 else:
                     # if the square is not visible, update the view from memory
-                    view[x-x0][y-y0] = (self.grid[x][y][0], MEMORY_COLOR)
+                    view[x-x0][y-y0] = Square(self.grid[x][y].view()[0],
+                                              MEMORY_COLOR)
         return view
