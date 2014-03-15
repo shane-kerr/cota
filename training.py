@@ -395,7 +395,12 @@ def school(ui, skill_list, pc):
                 return
         elif event.event_type == 'resize':
             ui.clear()
-        if m.can_move_onto(new_x, new_y):
+        # check for bump combat
+        if (new_x, new_y) in actors_by_pos:
+            player_history.add("Attack %s" % actors_by_pos[(new_x, new_y)].human_item)
+            player_moved = True
+        # otherwise move
+        elif m.can_move_onto(new_x, new_y):
             m.pickup_item(player)
             player_x, player_y = new_x, new_y
             things_here = m.items_at(player_x, player_y)
