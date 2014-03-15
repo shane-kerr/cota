@@ -50,7 +50,7 @@ def attack(attacker, attacker_name, weapon, victim, victim_name, history):
                 best_defense = [ "parry", victim.skill_levels[skill] ]
     # the victim has a shield
     elif victim.can_block and victim.equip["left hand"] and \
-         ("shield" in victim.equip["left hand"].name.tolower()):
+         ("shield" in victim.equip["left hand"].name.lower()):
         block_shield = victim.equip["left hand"]
         block_skill = -1
         for skill in block_shield.skills:
