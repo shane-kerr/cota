@@ -188,3 +188,57 @@ of wood glued together and covered with canvas and leather, usually
 with a spindle shaped boss along the vertical length of the shield. It
 is well made and extremely sturdy.
 
+name: Sandals
+symbol: ]
+color: brown
+weight: 1.5 libra
+equip: feet
+www: http://ancienthistory.about.com/od/clothing/qt/010511-Roman-Sandals-And-Other-Footwear.htm
+www: http://en.wikipedia.org/wiki/Caligae
+---
+Sandals are an open type of outdoor footwear, consisting of a sole
+held to the wearer's foot by straps passing over the instep and,
+sometimes, around the ankle. Sandals proper are not worn outside by
+the Romans, rather they were regarded as indoor footwear, sometimes
+even carried by slaves to be changed into for such things as banquets.
+
+name: Caligae (Boots)
+symbol: ]
+color: brown
+weight: 2.5 libra
+equip: feet
+www: http://en.wikipedia.org/wiki/Caligae
+---
+Caligae are heavy-soled hob-nailed military boots known for being
+issued to Roman legionary soldiers and auxiliaries throughout the
+Roman Republic and Empire. The caligae can resemble sandals but are
+actually marching boots.
+
+name: Toga
+symbol: h
+color: white
+weight: 2 libra
+equip: body
+www: http://en.wikipedia.org/wiki/Toga
+---
+The toga, a distinctive garment of Ancient Rome, was a cloth of
+perhaps 6 m in length which was wrapped around the body and was
+generally worn over a tunic. The toga was made of wool, and the tunic
+under it often was made of linen.
+
+name: Sagum (Tunic)
+symbol: h
+color: bright red
+weight: 1.5 libra
+equip: body
+www: http://en.wikipedia.org/wiki/Sagum
+---
+The sagum is a garment of note generally worn by members of the Roman
+military during both the Republic and early Empire. Regarded
+symbolically as a garment of war by the same tradition which embraces
+the toga as a garment of peace, it is slightly more practical in any
+event, consisting of a simple rectangular segment of cloth fastened by
+a leather or perhaps metal clasp and worn on top of the armor. The
+fabric is made of unwashed wool, saturated with lanolin which made it
+water-resistant); it is traditionally dyed bright red.
+

@@ -50,7 +50,7 @@ class ItemDefinitions:
                     #    assert(equip in ("1h weapon", "2h weapon", "hands"))
                     #    item_attrs["equip"].append(equip)
                     assert(attr_val.strip() in ("1h weapon", "2h weapon", 
-                                                "shield"))
+                                                "shield", "feet", "body"))
                     item_attrs["equip"] = attr_val.strip()
                 elif attr_name == "symbol":
                     attr_val = attr_val.strip()

@@ -117,21 +117,24 @@ class Human:
         # no free slots... bummer
         return None
 
-    def get_item(self, item, history):
+    def get_item(self, item, history=None):
         slot = self._find_slot(item)
         if slot is None:
-            history.add("No slots available to pick up the %s" % 
-                        item.name.lower())
+            if history:
+                history.add("No slots available to pick up the %s" % 
+                            item.name.lower())
             return False
         if self.weight_carried + item.weight > self.weight_limit:
-            history.add("You are already carrying too much weight to pick up the %s" %
-                        item.name.lower())
+            if history:
+                history.add("You are already carrying too much weight to pick up the %s" %
+                            item.name.lower())
             return False
         self.inventory[slot] = item
         self.weight_carried = self.weight_carried + item.weight
-        history.add("You picked up the %s" % item.name.lower() + 
-                    " (you can drop or equip from inventory)")
-        return True
+        if history:
+            history.add("You picked up the %s" % item.name.lower() + 
+                        " (you can drop or equip from inventory)")
+        return slot
 
     def equip_label(self, part):
         if self.equip[part] is None:
@@ -170,6 +173,11 @@ class Human:
             if self.equip["left hand"] == self.equip["right hand"]:
                 self.equip["right hand"] = None
             self.equip["left hand"] = item
+        elif item.equip == "feet":
+            self.equip["left foot"] = item
+            self.equip["right foot"] = item
+        elif item.equip == "body":
+            self.equip["torso"] = item
         else:
             assert(False)
 

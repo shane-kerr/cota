@@ -123,10 +123,12 @@ def inventory(ui, pc, inv_ofs, player_history):
         ui.write(equip_col, 0, "+" + ("-" * 78) + "+")
         label = "=[ Equipment ]="
         ui.write((width - len(label)) // 2, 0, label)
+        # head
         ui.write(equip_col, 1, "|       head: ")
         part = pc.equip_label("head")
         ui.write(equip_col+14, 1, part.ljust(64), eq_col(ui, part))
         ui.write(equip_col+79, 1, "|")
+        # body
         torso = pc.equip_label("torso")
         cloak = pc.equip_label("cloak")
         if torso == "nothing":
@@ -135,23 +137,29 @@ def inventory(ui, pc, inv_ofs, player_history):
             body = torso
         else:
             body = torso + ", " + cloak
-        ui.write(equip_col, 2, "|      torso: %s |" % body.ljust(64))
+        ui.write(equip_col, 2, "|      torso: %s |" % (" " * 64))
+        ui.write(equip_col+14, 2, body, eq_col(ui, body))
         ui.write(equip_col, 3, "+" + ("-" * 38) + "+" + ("-" * 39) + "+")
         ui.write(equip_col, 4, "|   left arm: %s | %s :right arm  |" % (
             pc.equip_label("left arm").ljust(24),
             pc.equip_label("right arm").rjust(25)))
+        # weapon
         ui.write(equip_col, 5, "|  left hand: %s | %s :right hand |" % (
                 (" " * 24), (" " * 25)))
         part = pc.equip_label("left hand")
-        ui.write(equip_col+14, 5, part.ljust(24), eq_col(ui, part))
+        ui.write(equip_col+14, 5, part, eq_col(ui, part))
         part = pc.equip_label("right hand")
         ui.write(equip_col+41, 5, part.rjust(25), eq_col(ui, part))
         ui.write(equip_col, 6, "|   left leg: %s | %s :right leg  |" % (
             pc.equip_label("left leg").ljust(24),
             pc.equip_label("right leg").rjust(25)))
+        # footwear
         ui.write(equip_col, 7, "|  left foot: %s | %s :right foot |" % (
-            pc.equip_label("left foot").ljust(24),
-            pc.equip_label("right foot").rjust(25)))
+            " " * 24, " " * 25))
+        part = pc.equip_label("left foot")
+        ui.write(equip_col+14, 7, part, eq_col(ui, part))
+        part = pc.equip_label("right foot")
+        ui.write(equip_col+41, 7, part.rjust(25), eq_col(ui, part))
         ui.write(equip_col, 8, "+" + ("-" * 38) + "+" + ("-" * 39) + "+")
 
         # show our inventory
@@ -280,6 +288,8 @@ def school(ui, skill_list, pc):
     player = stuff.create_item('@', PLAYER_COLOR, True, blocking=False)
     player_x = 2
     player_y = 2
+    pc.equip_item(pc.get_item(stuff.create_item_from_def("sandals")))
+    pc.equip_item(pc.get_item(stuff.create_item_from_def("toga")))
 
     things_here = m.items_at(player_x, player_y)
 
@@ -297,6 +307,11 @@ def school(ui, skill_list, pc):
 
     john_body = stuff.create_item('p', NPC_COLOR, transparent=True,
                                   name="Christian", blocking=False)
+    john_char = humans.Human()
+    sandals = stuff.create_item_from_def("sandals")
+    toga = stuff.create_item_from_def("toga")
+    john_char.equip_item(john_char.get_item(sandals))
+    john_char.equip_item(john_char.get_item(toga))
     john = humans.Martyr(humans.Human(), john_body)
     m.drop_item_at(john.human_item, 7, 4)
     actors_by_pos[(7, 4)] = john
