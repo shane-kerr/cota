@@ -1,12 +1,15 @@
+import textwrap
+
 import textui
 import keymap
 import display
 import items
 import grid
 import history
-import textwrap
+import humans
 
 PLAYER_COLOR=(textui.YELLOW, textui.BLACK, textui.BOLD)
+NPC_COLOR=(textui.RED, textui.BLACK, textui.BOLD)
 
 def get_slot_ranges(inv):
     """get the slot ranges, so if we have items "a", "b", and "d", 
@@ -290,6 +293,11 @@ def school(ui, skill_list, pc):
     scutum = stuff.create_item_from_def("scutum")
     m.drop_item_at(scutum, 5, 1)
 
+    john = stuff.create_item('p', NPC_COLOR, transparent=True, name="Christian")
+    john_npc = humans.Human()
+    john_personality = humans.Martyr()
+    m.drop_item_at(john, 7, 4)
+
     (width, height) = ui.get_screen_size()
     player_history = history.history(width)
 
@@ -330,6 +338,8 @@ def school(ui, skill_list, pc):
         event = ui.get_input()
         if event is None: continue
 
+        player_moved = False
+
         new_x = player_x
         new_y = player_y
         if event.event_type == 'keyboard':
@@ -360,6 +370,7 @@ def school(ui, skill_list, pc):
                         if pc.get_item(things_here[item_to_get],
                                        player_history):
                             m.pickup_item(things_here[item_to_get])
+                        player_moved = True
             elif event.key == ord('i'):
                 [ inv_ofs, drops ] = inventory(ui, pc, inv_ofs, player_history)
                 for item in drops:
@@ -380,5 +391,9 @@ def school(ui, skill_list, pc):
                 player_history.add("You see " + human_list(list(thing_str)) + 
                                    " here")
             m.drop_item_at(player, player_x, player_y)
-        
+            player_moved = True
+
+        # if the player moved, the non-players can move too
+        if player_moved:
+            john_personality.take_turn(john_npc, john, player_history)
 

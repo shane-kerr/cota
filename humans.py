@@ -1,5 +1,6 @@
-import dice
 import weakref
+import random
+import dice
 
 class Skills:
     def __init__(self, filename="skills.txt"):
@@ -171,4 +172,29 @@ class Human:
             self.equip["left hand"] = item
         else:
             assert(False)
+
+class Personality:
+    def take_turn(self, human, human_item, history):
+        pass
+
+class Martyr(Personality):
+    def take_turn(self, human, human_item, history):
+        # Somewhat liberally pluked from:
+        # http://www.inrebus.com/latinprayers.php
+        # Christian prayers are fab-u-tastic
+        # Oh, and some Monty Python
+        possible_actions = [
+            'seems to be praying... "sed libera nos a malo"',
+            'spreads his arms and glances at the sky, saying "meus, ex toto corde paenitet me omnium meorum peccatorum"',
+            'looks at you and says, "I forgive you your trespasses"',
+            'stamps his feet and shouts, "SAN MICHAEL, THRUST INTO HELL THE EVIL SPIRITS WHO PROWL THE WORLD!!!"',
+            'whispers something quietly to himself, looking at the ground',
+            'seems to be casting a spell, tracing some shapes in the air',
+            'chants, "Pie Iesu domine, dona eis requiem"',
+            'folds his hands and closes his eyes',
+        ]
+        if dice.dieN(6) == 1:
+            action = random.choice(possible_actions)
+            if history:
+                history.add("The %s %s" % (human_item.name, action))
 

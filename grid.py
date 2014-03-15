@@ -252,6 +252,13 @@ class Map:
         self.grid[center_x][center_y] = original_center
         return v
 
+def item_in_view(item, view):
+    for x in view:
+        for y in view[x]:
+            if item.uniq_id in view[x][y].stuff_uniq_ids():
+                return (x, y)
+    return None
+
 class MapMemory:
     def __init__(self, m):
         self.m = m
