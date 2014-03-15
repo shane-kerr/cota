@@ -1,6 +1,7 @@
 import weakref
 import random
 import dice
+import combat
 
 class Skills:
     def __init__(self, filename="skills.txt"):
@@ -104,7 +105,7 @@ class Human:
         elif n <= 16:
             return dice.die("-1D4")
         elif n <= 24:
-            return None
+            return dice.die("1D1-1")    # hack meaning "0"
         elif n <= 32:
             return dice.die("+1D4")
         elif n <= 40:
@@ -247,15 +248,15 @@ class Personality:
     def __init__(self, human_info, human_item):
         self.human_info = human_info
         self.human_item = human_item
-    def take_turn(self, histories):
+    def take_turn(self, m, actors_by_pos, histories):
         self.human_info.can_parry = True
         self.human_info.can_block = True
         self.human_info.can_dodge = True
 
 class Martyr(Personality):
-    def take_turn(self, histories):
+    def take_turn(self, m, actors_by_pos, histories):
         # use take_turn() from the super class
-        Personality.take_turn(self, histories)
+        Personality.take_turn(self, m, actors_by_pos, histories)
 
         # Somewhat liberally pluked from:
         # http://www.inrebus.com/latinprayers.php
@@ -277,9 +278,42 @@ class Martyr(Personality):
                 history.add("The %s %s" % (self.human_item.name, action))
 
 class Observer(Personality):
-    def take_turn(self, histories):
+    def take_turn(self, m, actors_by_pos, histories):
         # use take_turn() from the super class
-        Personality.take_turn(self, histories)
+        Personality.take_turn(self, m, actors_by_pos, histories)
 
-        # warn if player gets too close
-        # TODO: give some armor
+        # attack anyone next to me (TODO: remember and chase)
+        # XXX
+
+        # warn if anyone gets too close
+        my_x = self.human_item.pos[0]
+        my_y = self.human_item.pos[1]
+        view = m.view(my_x, my_y, 17, 17, 8)
+
+        # attack anyone standing next to the observer
+        for x in range(7, 10):
+            for y in range(7, 10):
+                if (x == 8) and (y == 8):
+                    continue
+                if view[x][y].view()[0] in ('p', '@'):
+                    for history in histories:
+                        history.add('%s says, I warned you... HAAAA!' %
+                                    self.human_item.name)
+                    victim = actors_by_pos[(x+my_x-8, y+my_y-8)]
+                    # XXX: single history...
+                    combat.attack(self.human_info, self.human_item.name, 
+                                  self.human_info.equip["right hand"],
+                                  victim.human_info, victim.human_item.name,
+                                  histories[0])
+                    return
+
+        # attack anyone standing next to the observer
+        for x in range(6, 11):
+            for y in range(6, 11):
+                if (x == 8) and (y == 8):
+                    continue
+                if view[x][y].view()[0] in ('p', '@'):
+                    for history in histories:
+                        history.add('%s says, "Don\'t get too close..."' %
+                                    self.human_item.name)
+

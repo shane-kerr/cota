@@ -345,13 +345,16 @@ def school(ui, backgrounds, skill_list, pc):
         npc_y = npc_y + 2
 
     # add our player
-    player = stuff.create_item('@', PLAYER_COLOR, True, blocking=False)
+    player = stuff.create_item('@', PLAYER_COLOR, True, blocking=False,
+                               name="you")
     player_x = 8
     player_y = 5
     pc.equip_item(pc.get_item(stuff.create_item_from_def("toga")))
     pc.equip_item(pc.get_item(stuff.create_item_from_def("sandals")))
     things_here = m.items_at(player_x, player_y)
     m.drop_item_at(player, player_x, player_y)
+    player_actor = humans.Personality(pc, player)
+    actors_by_pos[(player_x, player_y)] = player_actor
 
     (width, height) = ui.get_screen_size()
     player_history = history.history(width)
@@ -360,16 +363,17 @@ def school(ui, backgrounds, skill_list, pc):
     for club_loc in [(4,6), (5,7), (7,6), (8,6), (10,8)]:
         club = stuff.create_item_from_def("club")
         m.drop_item_at(club, club_loc[0], club_loc[1])
-#    hasta = stuff.create_item_from_def("hasta")
-#    m.drop_item_at(hasta, 4, 4)
-#    sword = stuff.create_item_from_def("short sword")
-#    m.drop_item_at(sword, 6, 2)
-#    scutum = stuff.create_item_from_def("scutum")
-#    m.drop_item_at(scutum, 5, 1)
+    for shield_loc in [(2,6), (3,6), (5,6), (6, 7), (9, 8)]:
+        shield = stuff.create_item_from_def("medium shield")
+        m.drop_item_at(shield, shield_loc[0], shield_loc[1])
 
     inv_ofs = 0
 
     while True:
+        player_state = pc.check_health()
+        if player_state != "okay":
+            return player_state
+
         textui.wait_for_minimum_size(ui, 80, 24)
         (width, height) = ui.get_screen_size()
         h_size = (width - 40) | 1
@@ -413,6 +417,11 @@ def school(ui, backgrounds, skill_list, pc):
 
         event = ui.get_input()
         if event is None: continue
+        if event.event_type == 'resize':
+            ui.clear()
+            continue
+        elif event.event_type == 'mouse':
+            continue
 
         player_moved = False
 
@@ -456,11 +465,10 @@ def school(ui, backgrounds, skill_list, pc):
                 ui.clear()
             elif event.key == textui.KEY_ESC:
                 return
-        elif event.event_type == 'resize':
-            ui.clear()
+
         # check for bump combat
+        del actors_by_pos[(player_x, player_y)]
         if (new_x, new_y) in actors_by_pos:
-#            player_history.add("Attack %s" % actors_by_pos[(new_x, new_y)].human_item)
             victim = actors_by_pos[(new_x, new_y)]
             victim_start_state = victim.human_info.check_health()
             combat.attack(pc, "You", pc.equip["right hand"], 
@@ -496,6 +504,7 @@ def school(ui, backgrounds, skill_list, pc):
                                    " here")
             m.drop_item_at(player, player_x, player_y)
             player_moved = True
+        actors_by_pos[(player_x, player_y)] = player_actor
 
         # if the player moved, the non-players can move too
         if player_moved:
@@ -503,10 +512,12 @@ def school(ui, backgrounds, skill_list, pc):
             player.can_block = True
             player.can_dodge = True
             for actor in actors_by_pos.values():
+                if actor is player_actor:
+                    continue
                 histories = [ ]
                 if grid.item_in_view(actor.human_item, view):
                     # TODO: each actor also needs a history...
                     histories.append(player_history)
                 if actor.human_info.check_health() == "okay":
-                    actor.take_turn(histories)
+                    actor.take_turn(m, actors_by_pos, histories)
 

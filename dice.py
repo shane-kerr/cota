@@ -1,7 +1,7 @@
 import random
 import re
 
-random.seed(a=1)
+#random.seed(a=1)
 
 def dieN(sides):
     return random.randint(1, sides)
