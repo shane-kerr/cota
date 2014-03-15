@@ -280,6 +280,16 @@ def human_list(items):
     else:
         return ", ".join(items[0:-1]) + ", and " + items[-1]
 
+def die_at(victim, m, x, y, history):
+    victim.human_item.symbol = '%'
+    victim.human_item.name = 'body of a ' + victim.human_item.name
+    victim.human_item.weight = victim.human_info.SIZ * 20
+    # XXX: for now we don't pick up bodies
+    victim.human_item.movable = False
+    for item in victim.human_info.get_inventory():
+        history.add("slot %s item '%s'" % (item[0], item[1].name))
+        m.drop_item_at(item[1], x, y)
+
 def school(ui, backgrounds, skill_list, pc):
     bg_by_name = { }
     for bg in backgrounds:
@@ -421,11 +431,28 @@ def school(ui, backgrounds, skill_list, pc):
         if (new_x, new_y) in actors_by_pos:
 #            player_history.add("Attack %s" % actors_by_pos[(new_x, new_y)].human_item)
             victim = actors_by_pos[(new_x, new_y)]
+            victim_start_state = victim.human_info.check_health()
             combat.attack(pc, "You", pc.equip["right hand"], 
                           victim.human_info, "the %s" % victim.human_item.name,
                           player_history)
-            # handle death
+            victim_end_state = victim.human_info.check_health()
+            if victim_start_state == "okay":
+                if victim_end_state == "dead":
+                    player_history.add("The %s dies" % victim.human_item.name)
+                    die_at(victim, m, new_x, new_y, player_history)
+                    del actors_by_pos[(new_x, new_y)]
+                elif victim_end_state == "unconscious":
+                    player_history.add("The %s loses consciousness" % 
+                                       victim.human_item.name)
+            elif victim_start_state == "unconscious":
+                if victim_end_state == "dead":
+                    player_history.add("The %s dies" % victim.human_item.name)
+                    die_at(victim, m, new_x, new_y, player_history)
+                    del actors_by_pos[(new_x, new_y)]
 
+            # we don't actually want to move, but we do use a turn
+            new_x = player_x
+            new_y = player_y
             player_moved = True
         # otherwise move
         elif m.can_move_onto(new_x, new_y):
@@ -449,5 +476,6 @@ def school(ui, backgrounds, skill_list, pc):
                 if grid.item_in_view(actor.human_item, view):
                     # TODO: each actor also needs a history...
                     histories.append(player_history)
-                actor.take_turn(histories)
+                if actor.human_info.check_health() == "okay":
+                    actor.take_turn(histories)
 

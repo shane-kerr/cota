@@ -105,5 +105,6 @@ def attack(attacker, attacker_name, weapon, victim, victim_name, history):
             hp = max(hp - protection, 0)
         history.add("%s attack %s: hit for %d damage!" % (attacker_name, 
                                                             victim_name, hp))
+        victim.wounds.append(hp)
         victim.HP = victim.HP - hp
 

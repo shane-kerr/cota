@@ -90,6 +90,9 @@ class Human:
         self.can_block = True
         self.can_dodge = True
 
+        # injuries
+        self.wounds = [ ]
+
     def damage_bonus(self):
         n = self.STR + self.SIZ
         if n <= 12:
@@ -108,6 +111,18 @@ class Human:
             return dice.die("+3D6")
         elif n <= 88:
             return dice.die("+4D6")
+
+    def check_health(self):
+        if self.HP <= 2:
+            self.can_parry = False
+            self.can_block = False
+            self.can_dodge = False
+            if self.HP <= 0:
+                return "dead"
+            else:
+                return "unconscious"
+        else:
+            return "okay"
 
     # There are a few algorithms possible for finding the next free slot.
     # First of all, we try to see if the item has the previous slot that
@@ -221,7 +236,8 @@ class Human:
         elif item.equip == "body":
             self.equip["torso"] = item
         else:
-            assert(False)
+            # not everything can be equipped...
+            pass
 
 class Personality:
     def __init__(self, human_info, human_item):
