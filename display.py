@@ -1,10 +1,11 @@
 import textui
 import history
 
-def show_keys_help(ui, width, height, keys, disabled=None):
+def show_keys_help(ui, width, height, keys, disabled=None, attack=None):
     text_color = ui.color_attr(textui.BLACK, textui.WHITE)
     key_color = ui.color_attr(textui.WHITE, textui.WHITE, textui.BOLD)
     disabled_color = ui.color_attr(textui.BLACK, textui.WHITE, textui.BOLD)
+    attack_color = ui.color_attr(textui.RED, textui.WHITE)
     total_len = len("Keys=") + len('/'.join(keys))
     help_col = (width-total_len) // 2
     ui.write(help_col, height-1, "Keys=", text_color)
@@ -12,6 +13,8 @@ def show_keys_help(ui, width, height, keys, disabled=None):
     while len(keys) > 1:
         if disabled and (keys[0] in disabled):
             color = disabled_color
+        elif attack and (keys[0] in attack):
+            color = attack_color
         else:
             color = key_color
         ui.write(help_col, height-1, keys[0], color)

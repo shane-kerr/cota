@@ -293,11 +293,13 @@ def school(ui, skill_list, pc):
     scutum = stuff.create_item_from_def("scutum")
     m.drop_item_at(scutum, 5, 1)
 
-    john = stuff.create_item('p', NPC_COLOR, transparent=True,
-                             name="Christian", blocking=False)
-    john_npc = humans.Human()
-    john_personality = humans.Martyr()
-    m.drop_item_at(john, 7, 4)
+    actors_by_pos = { }
+
+    john_body = stuff.create_item('p', NPC_COLOR, transparent=True,
+                                  name="Christian", blocking=False)
+    john = humans.Martyr(humans.Human(), john_body)
+    m.drop_item_at(john.human_item, 7, 4)
+    actors_by_pos[(7, 4)] = john
 
     (width, height) = ui.get_screen_size()
     player_history = history.history(width)
@@ -332,9 +334,19 @@ def school(ui, skill_list, pc):
             disabled.append("Left")
         if not m.can_move_onto(player_x+1, player_y):
             disabled.append("Right")
+        attack = [ ]
+        for (actor_x, actor_y) in actors_by_pos.keys():
+            if (actor_x == player_x-1) and (actor_y == player_y):
+                attack.append("Left")
+            elif (actor_x == player_x+1) and (actor_y == player_y):
+                attack.append("Right")
+            elif (actor_x == player_x) and (actor_y == player_y-1):
+                attack.append("Up")
+            elif (actor_x == player_x) and (actor_y == player_y+1):
+                attack.append("Down")
         display.show_keys_help(ui, width, height,
                   ("Esc", "Up", "Down", "Left", "Right", "g", "i"),
-                  disabled)
+                  disabled, attack)
 
         event = ui.get_input()
         if event is None: continue
@@ -396,8 +408,10 @@ def school(ui, skill_list, pc):
 
         # if the player moved, the non-players can move too
         if player_moved:
-            histories = [ ]
-            if grid.item_in_view(john, view):
-                histories.append(player_history)
-            john_personality.take_turn(john_npc, john, histories)
+            for actor in actors_by_pos.values():
+                histories = [ ]
+                if grid.item_in_view(actor.human_item, view):
+                    # TODO: each actor also needs a history...
+                    histories.append(player_history)
+                actor.take_turn(histories)
 
