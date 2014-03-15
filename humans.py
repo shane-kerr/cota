@@ -90,6 +90,25 @@ class Human:
         self.can_block = True
         self.can_dodge = True
 
+    def damage_bonus(self):
+        n = self.STR + self.SIZ
+        if n <= 12:
+            return dice.die("-1D6")
+        elif n <= 16:
+            return dice.die("-1D4")
+        elif n <= 24:
+            return None
+        elif n <= 32:
+            return dice.die("+1D4")
+        elif n <= 40:
+            return dice.die("+1D6")
+        elif n <= 56:
+            return dice.die("+2D6")
+        elif n <= 72:
+            return dice.die("+3D6")
+        elif n <= 88:
+            return dice.die("+4D6")
+
     # There are a few algorithms possible for finding the next free slot.
     # First of all, we try to see if the item has the previous slot that
     # it used available and use that.

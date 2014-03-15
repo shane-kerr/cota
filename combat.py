@@ -32,6 +32,7 @@ def attack(attacker, attacker_name, weapon, victim, victim_name, history):
         dmg =  dice.die("1D4")
     else:
         assert(0)
+    dmg_bonus = attacker.damage_bonus()
 
     # find the best chance for the defender
     best_defense = [ None, -1 ]
@@ -76,20 +77,20 @@ def attack(attacker, attacker_name, weapon, victim, victim_name, history):
     # TODO: add flavor text
     if attack_roll == "critical":
         if defense_roll == "critical":
-            hp = dmg.min()
+            hp = dmg.min() + dmg_bonus.min()
         elif defense_roll == "success":
-            hp = dmg.roll()
+            hp = dmg.roll() + dmg_bonus.roll()
         else:
-            hp = dmg.max()
+            hp = dmg.max() + dmg_bonus.max()
     elif attack_roll == "success":
         if defense_roll == "critical":
             hp = 0
         elif defense_roll == "success":
-            hp = dmg.min()
+            hp = dmg.min() + dmg_bonus.min()
         elif defense_roll == "failure":
-            hp = dmg.roll()
+            hp = dmg.roll() + dmg_bonus.roll()
         elif defense_roll == "fumble":
-            hp = dmg.max()
+            hp = dmg.max() + dmg_bonus.max()
 
     # armor
 

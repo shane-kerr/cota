@@ -43,7 +43,7 @@ def success_roll(skill, r=None):
 
 class die:
     def __init__(self, fmt):
-        m = re.match(r'\s*(\d*)D(\d+)\s*([+-]\s*\d+)?\s*$', fmt, re.IGNORECASE)
+        m = re.match(r'\s*([-+]?\d*)D(\d+)\s*([+-]\s*\d+)?\s*$', fmt, re.IGNORECASE)
         assert(m is not None)
         if m.group(1) == '':
             self.n = 1
