@@ -1,7 +1,94 @@
-def attack(attacker, weapon, victim, history):
-    max_skill = 0
-    for skill in weapon.skills:
-        if attacker.skill_levels[skill] > max_skill:
-            max_skill = attacker.skill_levels[skill]
+import dice
 
+def attack(attacker, attacker_name, weapon, victim, victim_name, history):
+    # find the best skill the attacker has for this weapon
+    max_skill_lvl = -1
+    max_skill_name = None
+    if weapon:
+        skills = weapon.skills
+    else:
+        skills = [ "Punch", "Kick", "Head Butt" ]
+    for skill in skills:
+        if attacker.skill_levels[skill] > max_skill_lvl:
+            max_skill_lvl = attacker.skill_levels[skill]
+            max_skill_name = skill
 
+    # roll for the attacker
+    attack_roll = dice.success_roll(max_skill_lvl)
+
+    # figure out the damage based on the weapon
+    if weapon:
+        best_attack_avg = -1
+        for attack_type in weapon.damage.keys():
+            avg_roll = weapon.damage[attack_type].avg()
+            if avg_roll > best_attack_avg:
+                best_attack_avg = avg_roll
+                dmg = weapon.damage[attack_type]
+    elif max_skill_name == "Punch":
+        dmg = dice.die("1D3")
+    elif max_skill_name == "Kick":
+        dmg =  dice.die("1D6")
+    elif max_skill_name == "Head Butt":
+        dmg =  dice.die("1D4")
+    else:
+        assert(0)
+
+    # find the best chance for the defender
+    best_defense = [ None, -1 ]
+    # the victim has a weapon...
+    if victim.equip["right hand"] and victim.can_parry:
+        parry_weapon = victim.equip["right hand"]
+        parry_skill = -1
+        for skill in parry_weapon.skills:
+            if victim.skill_levels[skill] > best_defense[1]:
+                best_defense = [ "parry", victim.skill_levels[skill] ]
+    # the victim has no weapon, but the attack was unarmed
+    elif victim.can_parry and not weapon:
+        for skill in [ "Punch", "Kick", "Head Butt" ]:
+            if victim.skill_levels[skill] > best_defense[1]:
+                best_defense = [ "parry", victim.skill_levels[skill] ]
+    # the victim has a shield
+    elif victim.can_block and victim.equip["left hand"] and \
+         ("shield" in victim.equip["left hand"].name.tolower()):
+        block_shield = victim.equip["left hand"]
+        block_skill = -1
+        for skill in block_shield.skills:
+            if victim.skill_levels[skill] > best_defense[1]:
+                best_defense = [ "block", victim.skill_levels[skill] ]
+    elif victim.can_dodge:
+        if victim.skill_levels["Dodge"] > best_defense[1]:
+            best_defense = [ "dodge", victim.skill_levels["Dodge"] ]
+
+    if best_defense[0]:
+        defense_roll = dice.success_roll(best_defense[1])
+    else:
+        defense_roll = "fail"
+
+    hp = 0
+    # TODO: add flavor text
+    if attack_roll == "critical":
+        if defense_roll == "critical":
+            hp = dmg.min()
+        elif defense_roll == "success":
+            hp = dmg.roll()
+        else:
+            hp = dmg.max()
+    elif attack_roll == "success":
+        if defense_roll == "critical":
+            hp = 0
+        elif defense_roll == "success":
+            hp = dmg.min()
+        elif defense_roll == "failure":
+            hp = dmg.roll()
+        elif defense_roll == "fumble":
+            hp = dmg.max()
+
+    # armor
+
+    if hp <= 0:
+        history.add("%s attack %s: miss" % (attacker_name, victim_name))
+    else:
+        history.add("%s attack %s: hit for %d damage!" % (attacker_name, 
+                                                            victim_name, hp))
+
+    victim.HP = victim.HP - hp

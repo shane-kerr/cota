@@ -8,6 +8,7 @@ import grid
 import history
 import humans
 import combat
+import background
 
 PLAYER_COLOR=(textui.YELLOW, textui.BLACK, textui.BOLD)
 NPC_COLOR=(textui.RED, textui.BLACK, textui.BOLD)
@@ -279,7 +280,11 @@ def human_list(items):
     else:
         return ", ".join(items[0:-1]) + ", and " + items[-1]
 
-def school(ui, skill_list, pc):
+def school(ui, backgrounds, skill_list, pc):
+    bg_by_name = { }
+    for bg in backgrounds:
+        bg_by_name[bg.name] = bg
+
     ui.clear()
     stuff = items.ItemCollection(items.ItemDefinitions(skill_list))
     m = grid.Map(80, 24, stuff)
@@ -309,11 +314,12 @@ def school(ui, skill_list, pc):
     john_body = stuff.create_item('p', NPC_COLOR, transparent=True,
                                   name="Christian", blocking=False)
     john_char = humans.Human()
+    john_char.set_default_skills(bg_by_name["Christian"], skill_list)
     toga = stuff.create_item_from_def("toga")
     sandals = stuff.create_item_from_def("sandals")
     john_char.equip_item(john_char.get_item(toga))
     john_char.equip_item(john_char.get_item(sandals))
-    john = humans.Martyr(humans.Human(), john_body)
+    john = humans.Martyr(john_char, john_body)
     m.drop_item_at(john.human_item, 7, 4)
     actors_by_pos[(7, 4)] = john
 
@@ -413,9 +419,11 @@ def school(ui, skill_list, pc):
             ui.clear()
         # check for bump combat
         if (new_x, new_y) in actors_by_pos:
-            player_history.add("Attack %s" % actors_by_pos[(new_x, new_y)].human_item)
+#            player_history.add("Attack %s" % actors_by_pos[(new_x, new_y)].human_item)
             victim = actors_by_pos[(new_x, new_y)]
-            combat.attack(pc, pc.equip["right hand"], victim, player_history)
+            combat.attack(pc, "You", pc.equip["right hand"], 
+                          victim.human_info, "the %s" % victim.human_item.name,
+                          player_history)
             # handle death
 
             player_moved = True

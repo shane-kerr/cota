@@ -1,52 +1,15 @@
-import glob
 import textwrap
 import textui
 from keymap import *
 from humans import Skills
+import background
 import playerchar
 import display
 
-class background:
-    def __init__(self, name, image, description, 
-                       allowed_skills, default_skill_levels):
-        self.name = name
-        self.image = image
-        self.description = description
-        self.allowed_skills = allowed_skills
-        self.default_skill_levels = default_skill_levels
-
-def load_all_backgrounds(directory="backgrounds"):
-    backgrounds = [ ]
-    longest_name = 0
-    for filename in glob.glob("%s/*.txt" % directory):
-        f = open(filename, "r")
-        text = f.read()
-        (name, image, description) = text.split("\n\n", 2)
-        descr_parts = description.split("\n\n")
-        allowed_skills = [ ]
-        default_skill_levels = { }
-        if descr_parts[-1].startswith("---\n"):
-            # get skill changes
-            for info in descr_parts[-1].strip().split('\n')[1:]:
-                tag,val = info.split(' ', 1)
-                if tag == 'skills':
-                    allowed_skills = val.split(',')
-                elif tag == 'default':
-                    default_parts = val.split()
-                    default_val = default_parts[-1]
-                    default_skill = ' '.join(default_parts[:-1])
-                    default_skill_levels[default_skill] = default_val
-            descr_parts = descr_parts[:-1]
-        description = '\n\n'.join(descr_parts)
-        bg = background(name, image, description.strip(), 
-                        allowed_skills, default_skill_levels)
-        backgrounds.append(bg)
-        longest_name = max(len(name), longest_name)
-    backgrounds.sort(key=lambda x: x.name)
-    return (backgrounds, longest_name)
-
-def background_selection(ui):
-    (backgrounds, longest_name) = load_all_backgrounds()
+def background_selection(ui, backgrounds):
+    longest_name = -1
+    for bg in backgrounds:
+        longest_name = max(longest_name, len(bg.name))
     ui.set_default_color_attr(textui.BLACK, textui.WHITE)
     ui.cursor_visible(False)
     menu_color = ui.color_attr(textui.BLACK, textui.WHITE)
@@ -429,15 +392,15 @@ def do_other_skills(ui, bg, pc, skill_list):
         while (cur - ofs) < 0:
             ofs = ofs - 1
 
-def make_char(ui):
+def make_char(ui, backgrounds):
     skill_list = Skills()
     pc = playerchar.PlayerCharacter()
-    bg = background_selection(ui)
+    bg = background_selection(ui, backgrounds)
     while do_occupation_skills(ui, bg, pc, skill_list) == "prev":
-        bg = background_selection(ui)
+        bg = background_selection(ui, backgrounds)
     while do_other_skills(ui, bg, pc, skill_list) == "prev":
         while do_occupation_skills(ui, bg, pc, skill_list) == "prev":
-            bg = background_selection(ui)
+            bg = background_selection(ui, backgrounds)
     return (skill_list, pc)
 
 if __name__ == "__main__":

@@ -1,10 +1,12 @@
 import textui
 import chargen
 import training
+import background
 
 def play_game(ui):
-    (skill_list, pc) = chargen.make_char(ui)
-    training.school(ui, skill_list, pc)
+    backgrounds = background.load_all_backgrounds()
+    (skill_list, pc) = chargen.make_char(ui, backgrounds)
+    training.school(ui, backgrounds, skill_list, pc)
 
 if __name__ == "__main__":
     textui.invoke(play_game)

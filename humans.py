@@ -85,6 +85,11 @@ class Human:
         self.weight_limit = (self.STR + self.SIZ) * 5
         self.weight_carried = 0
 
+        # these are used in combat, and refreshed each round
+        self.can_parry = True
+        self.can_block = True
+        self.can_dodge = True
+
     # There are a few algorithms possible for finding the next free slot.
     # First of all, we try to see if the item has the previous slot that
     # it used available and use that.
@@ -142,6 +147,24 @@ class Human:
         else:
             return self.equip[part].name
 
+    def set_default_skills(self, background, skill_list):
+        # set defaults based on statistics
+        for (name, default) in skill_list.defaults.items():
+            if default.upper().startswith("DEX*"):
+                default = self.DEX * int(default[4:])
+            elif default.upper().startswith("EDU*"):
+                default = self.EDU * int(default[4:])
+            self.skill_defaults[name] = int(default)
+            self.skill_levels[name] = int(default)
+        # set new defaults from background
+        for (name, default) in background.default_skill_levels.items():
+            if default.upper().startswith("DEX*"):
+                default = self.DEX * int(default[4:])
+            elif default.upper().startswith("EDU*"):
+                default = self.EDU * int(default[4:])
+            self.skill_defaults[name] = int(default)
+            self.skill_levels[name] = int(default)
+
     def get_inventory(self):
         inv = [ ]
         for slot in self.avail_slots:
@@ -185,11 +208,16 @@ class Personality:
     def __init__(self, human_info, human_item):
         self.human_info = human_info
         self.human_item = human_item
-    def take_turn(self, human, human_item, histories):
-        pass
+    def take_turn(self, histories):
+        self.human_info.can_parry = True
+        self.human_info.can_block = True
+        self.human_info.can_dodge = True
 
 class Martyr(Personality):
     def take_turn(self, histories):
+        # use take_turn() from the super class
+        Personality.take_turn(self, histories)
+
         # Somewhat liberally pluked from:
         # http://www.inrebus.com/latinprayers.php
         # Christian prayers are fab-u-tastic
