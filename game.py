@@ -2,10 +2,13 @@ import textui
 import chargen
 import training
 import background
+import dialog
 
 outcome = None
 
 def play_game(ui):
+    dialogs = dialog.dialog()
+    dialog.dialog_scroll(ui, dialogs.messages["welcome"])
     backgrounds = background.load_all_backgrounds()
     (skill_list, pc) = chargen.make_char(ui, backgrounds)
     global outcome
