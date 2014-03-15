@@ -58,6 +58,8 @@ class ItemDefinitions:
                     item_attrs["symbol"] = attr_val
                 elif attr_name == "color":
                     item_attrs["color"] = colors.parse_color(attr_val)
+                elif attr_name == "armor":
+                    item_attrs["armor"] = int(attr_val)
                 else:
                     # unknown item attribute... probably a misspelling
                     assert(False)
@@ -102,22 +104,23 @@ class ItemCollection:
                                 movable=True, desc=attrs["desc"],
                                 equip=attrs["equip"], 
                                 skills=attrs.get("skills"),
-                                damage=attrs.get("damage"),)
+                                damage=attrs.get("damage"),
+                                armor=attrs.get("armor"),)
     def create_item(self, symbol, color, 
                           transparent=False, blocking=True, uniq_id=None,
                           name='', weight=0.0, movable=True, desc='',
-                          equip=None, skills=[], damage=[]):
+                          equip=None, skills=[], damage=[], armor=None):
         uniq_id = self._next_uniq_id(uniq_id)
         item = Item(symbol, color, transparent, blocking, uniq_id,
                     name=name, weight=weight, movable=movable, desc=desc,
-                    equip=equip, skills=skills, damage=damage)
+                    equip=equip, skills=skills, damage=damage, armor=armor)
         self.items[uniq_id] = item
         return item
     def copy_item(self, item):
         return self.create_item(item.symbol, item.color, item.transparent, 
                                 item.blocking, item.name, item.weight, 
                                 item.movable, item.desc, item.equip,
-                                item.skills, item.damage)
+                                item.skills, item.damage, item.armor)
     def dump(self):
         items = [ ]
         for item in self.items.values():
@@ -139,7 +142,8 @@ class ItemCollection:
                                          desc=item["desc"],
                                          equip=item["equip"],
                                          skills=item["skills"],
-                                         damage=item["damage"],)
+                                         damage=item["damage"],
+                                         armor=item["armor"],)
             hold_item.pos = undump_pos(item["pos"])
             hold_items.append(hold_item)
         # we return an array holding the items, because the item collection
@@ -150,7 +154,7 @@ class Item:
     def __init__(self, symbol, color, 
                        transparent=False, blocking=True, uniq_id=None,
                        name=None, weight=0.0, movable=True, desc=None,
-                       equip=None, skills=[], damage=[]):
+                       equip=None, skills=[], damage=[], armor=None):
         self.symbol = symbol
         self.color = color
         self.transparent = transparent
@@ -164,12 +168,13 @@ class Item:
         self.equip = equip
         self.skills = skills
         self.damage = damage
+        self.armor = armor
     def __repr__(self):
         if self.pos:
             pos_str = "(%d,%d)" % self.pos
         else:
             pos_str = "None"
-        # TODO: skills, damage
+        # TODO: skills, damage, armor
         return "<Item('%s',%s,%s,%s,%s,%d,'%s',%.1f,%s,%s,%s)>" % (self.symbol,
                                     self.color, self.transparent,
                                     self.blocking, pos_str, self.uniq_id,
@@ -189,6 +194,7 @@ class Item:
                  "equip": self.equip,
                  "skills": self.skills,
                  "damage": self.damage,
+                 "armor": self.armor,
                  "pos": dump_pos(self.pos), 
                  "_id": self.uniq_id, } 
     def view(self):

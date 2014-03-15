@@ -92,12 +92,18 @@ def attack(attacker, attacker_name, weapon, victim, victim_name, history):
         elif defense_roll == "fumble":
             hp = dmg.max() + dmg_bonus.max()
 
-    # armor
-
     if hp <= 0:
         history.add("%s attack %s: miss" % (attacker_name, victim_name))
     else:
+        # reduce by armor amount
+        armor = victim.equip["torso"]
+        if armor:
+            if armor.armor:
+                protection = armor.armor
+            else:
+                protection = 0
+            hp = max(hp - protection, 0)
         history.add("%s attack %s: hit for %d damage!" % (attacker_name, 
                                                             victim_name, hp))
+        victim.HP = victim.HP - hp
 
-    victim.HP = victim.HP - hp

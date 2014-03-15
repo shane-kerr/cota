@@ -193,6 +193,7 @@ symbol: ]
 color: brown
 weight: 1.5 libra
 equip: feet
+armor: 1
 www: http://ancienthistory.about.com/od/clothing/qt/010511-Roman-Sandals-And-Other-Footwear.htm
 www: http://en.wikipedia.org/wiki/Caligae
 ---
@@ -206,6 +207,7 @@ name: Caligae (Boots)
 symbol: ]
 color: brown
 weight: 2.5 libra
+armor: 1
 equip: feet
 www: http://en.wikipedia.org/wiki/Caligae
 ---
@@ -219,6 +221,7 @@ symbol: h
 color: white
 weight: 2 libra
 equip: body
+armor: 1
 www: http://en.wikipedia.org/wiki/Toga
 ---
 The toga, a distinctive garment of Ancient Rome, was a cloth of
@@ -231,6 +234,7 @@ symbol: h
 color: bright red
 weight: 1.5 libra
 equip: body
+armor: 1
 www: http://en.wikipedia.org/wiki/Sagum
 ---
 The sagum is a garment of note generally worn by members of the Roman
