@@ -27,4 +27,14 @@ class die:
             self.plus = 0
     def roll(self):
         return roll(self.n, self.sides, self.plus)
+    def info(self):
+        min_roll = (self.n * 1) + self.plus
+        avg_roll = (self.n * ((self.sides / 2) + 0.5)) + self.plus
+        max_roll = (self.n * self.sides) + self.plus
+        return (min_roll, avg_roll, max_roll)
+    def __str__(self):
+        if self.plus != 0:
+            return "%dD%d%+d" % (self.n, self.sides, self.plus)
+        else:
+            return "%dD%d" % (self.n, self.sides)
 

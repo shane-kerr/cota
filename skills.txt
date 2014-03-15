@@ -31,8 +31,8 @@ Trident                 5
 ---
 
 # unarmed combat
-Punch                   25
-Kick                    15
+Punch                   50
+Kick                    25
 Head Butt               10
 
 ---

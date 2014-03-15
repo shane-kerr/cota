@@ -7,6 +7,7 @@ import items
 import grid
 import history
 import humans
+import combat
 
 PLAYER_COLOR=(textui.YELLOW, textui.BLACK, textui.BOLD)
 NPC_COLOR=(textui.RED, textui.BLACK, textui.BOLD)
@@ -288,8 +289,8 @@ def school(ui, skill_list, pc):
     player = stuff.create_item('@', PLAYER_COLOR, True, blocking=False)
     player_x = 2
     player_y = 2
-    pc.equip_item(pc.get_item(stuff.create_item_from_def("sandals")))
     pc.equip_item(pc.get_item(stuff.create_item_from_def("toga")))
+    pc.equip_item(pc.get_item(stuff.create_item_from_def("sandals")))
 
     things_here = m.items_at(player_x, player_y)
 
@@ -308,10 +309,10 @@ def school(ui, skill_list, pc):
     john_body = stuff.create_item('p', NPC_COLOR, transparent=True,
                                   name="Christian", blocking=False)
     john_char = humans.Human()
-    sandals = stuff.create_item_from_def("sandals")
     toga = stuff.create_item_from_def("toga")
-    john_char.equip_item(john_char.get_item(sandals))
+    sandals = stuff.create_item_from_def("sandals")
     john_char.equip_item(john_char.get_item(toga))
+    john_char.equip_item(john_char.get_item(sandals))
     john = humans.Martyr(humans.Human(), john_body)
     m.drop_item_at(john.human_item, 7, 4)
     actors_by_pos[(7, 4)] = john
@@ -413,6 +414,10 @@ def school(ui, skill_list, pc):
         # check for bump combat
         if (new_x, new_y) in actors_by_pos:
             player_history.add("Attack %s" % actors_by_pos[(new_x, new_y)].human_item)
+            victim = actors_by_pos[(new_x, new_y)]
+            combat.attack(pc, pc.equip["right hand"], victim, player_history)
+            # handle death
+
             player_moved = True
         # otherwise move
         elif m.can_move_onto(new_x, new_y):

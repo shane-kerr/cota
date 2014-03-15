@@ -24,11 +24,11 @@ class ItemDefinitions:
                     assert(weight_type == "libra")
                     item_attrs["weight"] = float(weight_amt)
                 elif attr_name == "skill":
-                    item_attrs["skill"] = [ ]
+                    item_attrs["skills"] = [ ]
                     for skill_name in attr_val.split(","):
                         skill_name = skill_name.strip()
                         assert(skill_name in skill_list.defaults)
-                        item_attrs["skill"].append(skill_name)
+                        item_attrs["skills"].append(skill_name)
                 elif attr_name == "www":
                     pass
                 elif attr_name == "damage":
@@ -100,21 +100,24 @@ class ItemCollection:
                                 transparent=True, blocking=False, 
                                 name=attrs["name"], weight=attrs["weight"],
                                 movable=True, desc=attrs["desc"],
-                                equip=attrs["equip"],)
+                                equip=attrs["equip"], 
+                                skills=attrs.get("skills"),
+                                damage=attrs.get("damage"),)
     def create_item(self, symbol, color, 
                           transparent=False, blocking=True, uniq_id=None,
                           name='', weight=0.0, movable=True, desc='',
-                          equip=None):
+                          equip=None, skills=[], damage=[]):
         uniq_id = self._next_uniq_id(uniq_id)
         item = Item(symbol, color, transparent, blocking, uniq_id,
                     name=name, weight=weight, movable=movable, desc=desc,
-                    equip=equip)
+                    equip=equip, skills=skills, damage=damage)
         self.items[uniq_id] = item
         return item
     def copy_item(self, item):
         return self.create_item(item.symbol, item.color, item.transparent, 
                                 item.blocking, item.name, item.weight, 
-                                item.movable, item.desc)
+                                item.movable, item.desc, item.equip,
+                                item.skills, item.damage)
     def dump(self):
         items = [ ]
         for item in self.items.values():
@@ -134,7 +137,9 @@ class ItemCollection:
                                          weight=item["weight"],
                                          movable=item["movable"],
                                          desc=item["desc"],
-                                         equip=item["equip"],)
+                                         equip=item["equip"],
+                                         skills=item["skills"],
+                                         damage=item["damage"],)
             hold_item.pos = undump_pos(item["pos"])
             hold_items.append(hold_item)
         # we return an array holding the items, because the item collection
@@ -145,7 +150,7 @@ class Item:
     def __init__(self, symbol, color, 
                        transparent=False, blocking=True, uniq_id=None,
                        name=None, weight=0.0, movable=True, desc=None,
-                       equip=None):
+                       equip=None, skills=[], damage=[]):
         self.symbol = symbol
         self.color = color
         self.transparent = transparent
@@ -157,11 +162,14 @@ class Item:
         self.movable = movable
         self.desc = desc
         self.equip = equip
+        self.skills = skills
+        self.damage = damage
     def __repr__(self):
         if self.pos:
             pos_str = "(%d,%d)" % self.pos
         else:
             pos_str = "None"
+        # TODO: skills, damage
         return "<Item('%s',%s,%s,%s,%s,%d,'%s',%.1f,%s,%s,%s)>" % (self.symbol,
                                     self.color, self.transparent,
                                     self.blocking, pos_str, self.uniq_id,
@@ -179,6 +187,8 @@ class Item:
                  "movable": self.movable,
                  "desc": self.desc,
                  "equip": self.equip,
+                 "skills": self.skills,
+                 "damage": self.damage,
                  "pos": dump_pos(self.pos), 
                  "_id": self.uniq_id, } 
     def view(self):
