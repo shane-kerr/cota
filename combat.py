@@ -61,8 +61,16 @@ def attack(attacker, attacker_name, weapon, victim, victim_name, history):
 
     if best_defense[0]:
         defense_roll = dice.success_roll(best_defense[1])
+        # mark our defense as done until our next turn
+        if best_defense[0] == "block":
+            victim.can_block = False
+        elif best_defense[0] == "dodge":
+            victim.can_dodge = False
+        elif best_defense[0] == "parry":
+            victim.can_parry = False
     else:
         defense_roll = "fail"
+
 
     hp = 0
     # TODO: add flavor text

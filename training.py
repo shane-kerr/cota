@@ -441,6 +441,9 @@ def school(ui, backgrounds, skill_list, pc):
 
         # if the player moved, the non-players can move too
         if player_moved:
+            player.can_parry = True
+            player.can_block = True
+            player.can_dodge = True
             for actor in actors_by_pos.values():
                 histories = [ ]
                 if grid.item_in_view(actor.human_item, view):
