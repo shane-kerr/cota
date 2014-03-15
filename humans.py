@@ -178,7 +178,7 @@ class Personality:
         pass
 
 class Martyr(Personality):
-    def take_turn(self, human, human_item, history=None):
+    def take_turn(self, human, human_item, histories):
         # Somewhat liberally pluked from:
         # http://www.inrebus.com/latinprayers.php
         # Christian prayers are fab-u-tastic
@@ -195,6 +195,6 @@ class Martyr(Personality):
         ]
         if dice.dieN(6) == 1:
             action = random.choice(possible_actions)
-            if history:
+            for history in histories:
                 history.add("The %s %s" % (human_item.name, action))
 

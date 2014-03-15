@@ -218,7 +218,7 @@ class Map:
         self.grid[center_x][center_y] = Square(original_look[0], 
                                                original_look[1])
 
-        nowhere = (' ', DARK_COLOR)
+        nowhere = Square(' ', DARK_COLOR)
         assert((view_height & 1) == 1)
         assert((view_width & 1) == 1)
         half_wide = view_width // 2
@@ -236,7 +236,6 @@ class Map:
                     if (map_y < 0) or (map_y >= self.height):
                         view_col.append(nowhere)
                     else:
-                        square_view = self.grid[map_x][map_y].view()
                         x_dist = abs(half_wide - x)
                         y_dist = abs(half_high - y)
                         dist_squared = y_dist*y_dist + x_dist*x_dist
@@ -245,7 +244,7 @@ class Map:
                                                       map_x, map_y):
                             view_col.append(nowhere)
                         else:
-                            view_col.append(square_view)
+                            view_col.append(self.grid[map_x][map_y])
             v.append(view_col)
 
         # return the original center
@@ -253,8 +252,8 @@ class Map:
         return v
 
 def item_in_view(item, view):
-    for x in view:
-        for y in view[x]:
+    for x in range(len(view)):
+        for y in range(len(view[0])):
             if item.uniq_id in view[x][y].stuff_uniq_ids():
                 return (x, y)
     return None
