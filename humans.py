@@ -36,14 +36,7 @@ class Human:
         self.APP = dice.roll(3, 6)
         self.EDU = dice.roll(3, 6, 3)
         
-        self.Sanity = self.POW * 5
-        self.Idea = self.INT * 5
-        self.Know = self.EDU * 5
-        self.Luck = self.POW * 5
-
-        self.HP = (self.CON + self.SIZ + 1) // 2
-        self.MP = self.POW
-        self.SP = self.Sanity
+        self.compute()
 
         self.skill_defaults = { }
         self.skills_started = { }
@@ -74,15 +67,6 @@ class Human:
         self.slot_stability_cache = { }
         self.last_slot_ofs = len(self.avail_slots)-1
 
-        # -- weight limits --
-        # We note that a typical legionary would carry 36.5 kg, which is 
-        # about 110 libra.
-        # Given an average STR of 10 and SIZ of 13, that works out to 
-        # about 4.8 libra per (STR+SIZ).
-        # Based on this, we'll set our weight limit to (STR+SIZ)*5
-        # (Call of Cthulhu doesn't really have limits defined, and 
-        # RuneQuest uses the abstract concept of "encumbrance".)
-        self.weight_limit = (self.STR + self.SIZ) * 5
         self.weight_carried = 0
 
         # these are used in combat, and refreshed each round
@@ -92,6 +76,26 @@ class Human:
 
         # injuries
         self.wounds = [ ]
+
+    def compute(self):
+        self.Sanity = self.POW * 5
+        self.Idea = self.INT * 5
+        self.Know = self.EDU * 5
+        self.Luck = self.POW * 5
+
+        self.HP = (self.CON + self.SIZ + 1) // 2
+        self.MP = self.POW
+        self.SP = self.Sanity
+
+        # -- weight limits --
+        # We note that a typical legionary would carry 36.5 kg, which is 
+        # about 110 libra.
+        # Given an average STR of 10 and SIZ of 13, that works out to 
+        # about 4.8 libra per (STR+SIZ).
+        # Based on this, we'll set our weight limit to (STR+SIZ)*5
+        # (Call of Cthulhu doesn't really have limits defined, and 
+        # RuneQuest uses the abstract concept of "encumbrance".)
+        self.weight_limit = (self.STR + self.SIZ) * 5
 
     def damage_bonus(self):
         n = self.STR + self.SIZ
@@ -272,3 +276,10 @@ class Martyr(Personality):
             for history in histories:
                 history.add("The %s %s" % (self.human_item.name, action))
 
+class Observer(Personality):
+    def take_turn(self, histories):
+        # use take_turn() from the super class
+        Personality.take_turn(self, histories)
+
+        # warn if player gets too close
+        # TODO: give some armor

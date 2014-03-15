@@ -287,7 +287,6 @@ def die_at(victim, m, x, y, history):
     # XXX: for now we don't pick up bodies
     victim.human_item.movable = False
     for item in victim.human_info.get_inventory():
-        history.add("slot %s item '%s'" % (item[0], item[1].name))
         m.drop_item_at(item[1], x, y)
 
 def school(ui, backgrounds, skill_list, pc):
@@ -301,40 +300,72 @@ def school(ui, backgrounds, skill_list, pc):
     apply_school_map(m, stuff)
     mm = grid.MapMemory(m)
 
-    player = stuff.create_item('@', PLAYER_COLOR, True, blocking=False)
-    player_x = 2
-    player_y = 2
-    pc.equip_item(pc.get_item(stuff.create_item_from_def("toga")))
-    pc.equip_item(pc.get_item(stuff.create_item_from_def("sandals")))
-
-    things_here = m.items_at(player_x, player_y)
-
-    m.drop_item_at(player, player_x, player_y)
-    club = stuff.create_item_from_def("club")
-    m.drop_item_at(club, 2, 5)
-    hasta = stuff.create_item_from_def("hasta")
-    m.drop_item_at(hasta, 4, 4)
-    sword = stuff.create_item_from_def("short sword")
-    m.drop_item_at(sword, 6, 2)
-    scutum = stuff.create_item_from_def("scutum")
-    m.drop_item_at(scutum, 5, 1)
 
     actors_by_pos = { }
 
-    john_body = stuff.create_item('p', NPC_COLOR, transparent=True,
-                                  name="Christian", blocking=False)
-    john_char = humans.Human()
-    john_char.set_default_skills(bg_by_name["Christian"], skill_list)
-    toga = stuff.create_item_from_def("toga")
-    sandals = stuff.create_item_from_def("sandals")
-    john_char.equip_item(john_char.get_item(toga))
-    john_char.equip_item(john_char.get_item(sandals))
-    john = humans.Martyr(john_char, john_body)
-    m.drop_item_at(john.human_item, 7, 4)
-    actors_by_pos[(7, 4)] = john
+    # add our boss
+    npc_body = stuff.create_item('p', (textui.RED, textui.BLACK, textui.NORMAL),
+                                 transparent=True, name="Iudictus",
+                                 blocking=False)
+    npc_stats = humans.Human()
+    npc_stats.STR = 14
+    npc_stats.CON = 15
+    npc_stats.DEX = 14
+    npc_stats.SIZ = 15
+    npc_stats.compute()
+    npc_stats.set_default_skills(bg_by_name["Legionary"], skill_list)
+    npc_stats.skill_levels["Dodge"] = 100
+    npc_stats.skill_levels["Sword - Short"] = 140
+    gladius = stuff.create_item_from_def("gladius")
+    npc_stats.equip_item(npc_stats.get_item(gladius))
+    tunic = stuff.create_item_from_def("tunic")
+    npc_stats.equip_item(npc_stats.get_item(tunic))
+    boots = stuff.create_item_from_def("boots")
+    npc_stats.equip_item(npc_stats.get_item(boots))
+    npc = humans.Observer(npc_stats, npc_body)
+    m.drop_item_at(npc.human_item, 8, 12)
+    actors_by_pos[(8, 12)] = npc
+
+    # add some Christians
+    npc_x = 4
+    npc_y = 3
+    for name in [ "Matthew", "Mark", ]:
+        npc_body = stuff.create_item('p', NPC_COLOR, transparent=True,
+                                     name="Christian", blocking=False)
+        npc_stats = humans.Human()
+        npc_stats.set_default_skills(bg_by_name["Christian"], skill_list)
+        toga = stuff.create_item_from_def("toga")
+        npc_stats.equip_item(npc_stats.get_item(toga))
+        sandals = stuff.create_item_from_def("sandals")
+        npc_stats.equip_item(npc_stats.get_item(sandals))
+        npc = humans.Martyr(npc_stats, npc_body)
+        m.drop_item_at(npc.human_item, npc_x, npc_y)
+        actors_by_pos[(npc_x, npc_y)] = npc
+        npc_x = npc_x + 2
+        npc_y = npc_y + 2
+
+    # add our player
+    player = stuff.create_item('@', PLAYER_COLOR, True, blocking=False)
+    player_x = 8
+    player_y = 5
+    pc.equip_item(pc.get_item(stuff.create_item_from_def("toga")))
+    pc.equip_item(pc.get_item(stuff.create_item_from_def("sandals")))
+    things_here = m.items_at(player_x, player_y)
+    m.drop_item_at(player, player_x, player_y)
 
     (width, height) = ui.get_screen_size()
     player_history = history.history(width)
+
+    # sprinkle some weapons around
+    for club_loc in [(4,6), (5,7), (7,6), (8,6), (10,8)]:
+        club = stuff.create_item_from_def("club")
+        m.drop_item_at(club, club_loc[0], club_loc[1])
+#    hasta = stuff.create_item_from_def("hasta")
+#    m.drop_item_at(hasta, 4, 4)
+#    sword = stuff.create_item_from_def("short sword")
+#    m.drop_item_at(sword, 6, 2)
+#    scutum = stuff.create_item_from_def("scutum")
+#    m.drop_item_at(scutum, 5, 1)
 
     inv_ofs = 0
 
