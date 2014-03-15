@@ -178,7 +178,7 @@ class Personality:
         pass
 
 class Martyr(Personality):
-    def take_turn(self, human, human_item, history):
+    def take_turn(self, human, human_item, history=None):
         # Somewhat liberally pluked from:
         # http://www.inrebus.com/latinprayers.php
         # Christian prayers are fab-u-tastic

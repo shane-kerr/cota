@@ -29,7 +29,7 @@ def main_display(ui, width, height, view, pc, history):
     # show the map
     for x in range(len(view)):
         for y in range(len(view[x])):
-            (c, a) = view[x][y]
+            (c, a) = view[x][y].view()
             ui.write(x+1, y+1, c, ui.color_attr(a[0], a[1], a[2]))
 
     # show the basic stats

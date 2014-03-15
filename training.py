@@ -395,5 +395,8 @@ def school(ui, skill_list, pc):
 
         # if the player moved, the non-players can move too
         if player_moved:
-            john_personality.take_turn(john_npc, john, player_history)
+            if grid.item_in_view(john, view):
+                john_personality.take_turn(john_npc, john, player_history)
+            else:
+                john_personality.take_turn(john_npc, john)
 
